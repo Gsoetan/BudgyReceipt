@@ -44,6 +44,8 @@ public class OverviewActivity extends AppCompatActivity {
 
     private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
     private ImageView oPhotoIv;
+    ImageButton clickme;
+
 
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 400;
@@ -68,16 +70,24 @@ public class OverviewActivity extends AppCompatActivity {
         oPaymentEt = findViewById(R.id.payment);
         oPhotoIv = findViewById(R.id.photo);
 
+        clickme = (ImageButton)findViewById(R.id.backButton);
+        clickme.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OverviewActivity.this, MainActivity.class));
+            }
+        });
+
         //camera permissions
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         //storage permission
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
     }
 
 
-    public void goBack(View view) { // https://stackoverflow.com/questions/4038479/android-go-back-to-previous-activity
-        finishActivity(1);
-    }
+
+
 
     public void saveData(View view) {
         // https://developer.android.com/guide/topics/ui/settings/use-saved-values
@@ -85,6 +95,7 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void addPhoto(View view) {
+
         showImageImportDialog();
     }
 
