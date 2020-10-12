@@ -22,8 +22,11 @@ import android.provider.MediaStore;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Space;
 import android.widget.Toast;
@@ -37,10 +40,10 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 
 import static com.example.budgyreceipt.MainCalculations.stringParse;
 
-public class MainActivity extends AppCompatActivity {
+public class OverviewActivity extends AppCompatActivity {
 
-    EditText mResultEt;
-    ImageView mPreviewIv;
+    private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
+    private ImageView oPhotoIv;
 
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 400;
@@ -49,18 +52,21 @@ public class MainActivity extends AppCompatActivity {
 
     String[] cameraPermission;
     String[] storagePermission;
+    String[] entries;
 
     Uri image_uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setSubtitle("Click image button to insert image");
+        setContentView(R.layout.activity_overview);
 
-        mResultEt = findViewById(R.id.resultEt);
-        mPreviewIv = findViewById(R.id.imageIv);
+        oTitleEt = findViewById(R.id.merchant);
+        oDateEt = findViewById(R.id.date);
+        oTotalEt = findViewById(R.id.total);
+        oSubTotalEt = findViewById(R.id.subTotal);
+        oPaymentEt = findViewById(R.id.payment);
+        oPhotoIv = findViewById(R.id.photo);
 
         //camera permissions
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -68,27 +74,18 @@ public class MainActivity extends AppCompatActivity {
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
     }
 
-    //actionbar menu (settings)
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+
+    public void goBack(View view) { // https://stackoverflow.com/questions/4038479/android-go-back-to-previous-activity
+        finishActivity(1);
     }
 
-    //handle action bar item clicks (settings)
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.addImage){
-            showImageImportDialog();
-        }
-        if (id == R.id.weekly){
-            Toast.makeText(this,"Weekly", Toast.LENGTH_SHORT).show();
-        }
-        if (id == R.id.monthly){
-            Toast.makeText(this,"Monthly", Toast.LENGTH_SHORT).show();
-        }
-        return super.onOptionsItemSelected(item);
+    public void saveData(View view) {
+        // https://developer.android.com/guide/topics/ui/settings/use-saved-values
+        // https://developer.android.com/topic/libraries/architecture/saving-states
+    }
+
+    public void addPhoto(View view) {
+        showImageImportDialog();
     }
 
     private void showImageImportDialog(){
@@ -124,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void pickGallery() {
-        //intent to pick image from gallary
+        //intent to pick image from gallery
         Intent intent = new Intent(Intent.ACTION_PICK);
         //set intent type to image
         intent.setType("image/*");
@@ -146,19 +143,19 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this, storagePermission, STORAGE_REQUEST_CODE);
     }
 
-    private boolean checkStoragePermission() {
-        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result;
+    private boolean checkStoragePermission() { // check to see if user has granted application access to photos on device
+        boolean writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return writePermission;
     }
 
     private void requestCameraPermission() {
         ActivityCompat.requestPermissions(this, cameraPermission, CAMERA_REQUEST_CODE);
     }
 
-    private boolean checkCameraPermission() {
-        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean result_1 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return result && result_1;
+    private boolean checkCameraPermission() { // check to see if user has granted permission for application to take photos using camera as well as permission to save it (more for camera option)
+        boolean camPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
+        boolean writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return camPermission && writePermission;
     }
 
     //handle permission result
@@ -199,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
                 CropImage.activity(data.getData())
                         .setGuidelines(CropImageView.Guidelines.ON) // enable image guidelines
                         .start(this);
-
             }
             if (requestCode == IMAGE_PICK_CAMERA_CODE) {
                 //got image from camera, now crop
@@ -213,16 +209,15 @@ public class MainActivity extends AppCompatActivity {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri(); //get image uri
-                //set image to image view
-                mPreviewIv.setImageURI(resultUri);
+                oPhotoIv.setImageURI(resultUri); //set image to image view
 
-                //get drawable bitmap for text recognition
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) mPreviewIv.getDrawable();
+                //make drawable bitmap for text recognition
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) oPhotoIv.getDrawable();
                 Bitmap bitmap = bitmapDrawable.getBitmap();
 
                 TextRecognizer recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
 
-                if (!recognizer.isOperational()) {
+                if (!recognizer.isOperational()) { // if there was a problem with the recognizer return an error
                     Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
                 } else {
                     Frame frame = new Frame.Builder().setBitmap(bitmap).build();
@@ -234,11 +229,15 @@ public class MainActivity extends AppCompatActivity {
                         sb.append(myItem.getValue());
                         sb.append("\n");
                     }
-                    //set
-                    mResultEt.setText(sb.toString());
-                    stringParse(sb);
+                    //set all entries to their respective values
+                    oTotalEt.setText(sb.toString());
+                    entries = stringParse(sb); //returns a array in format {date, payment, total, subtotal}
+                    oDateEt.setText(entries[0]);
+                    oPaymentEt.setText(entries[1]);
+                    oTotalEt.setText(entries[2]);
+                    oSubTotalEt.setText(entries[3]);
                 }
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) { // if there is a problem with the crop tool
                 //if there is any error show it
                 Exception error = result.getError();
                 Toast.makeText(this, "" + error, Toast.LENGTH_SHORT).show();

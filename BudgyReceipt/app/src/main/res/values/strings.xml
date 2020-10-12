@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Budgy Receipt</string>
+    <string-array name="tags">
+        <item>Grocery</item>
+        <item>Entertainment</item>
+        <item>Luxury</item>
+        <item>Health</item>
+        <item>Clothing</item>
+        <item>Automotive</item>
+        <item>Travel</item>
+    </string-array>
 </resources>
