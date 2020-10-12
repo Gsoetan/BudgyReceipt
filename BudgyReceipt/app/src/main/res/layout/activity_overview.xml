@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:src="@drawable/ic_action_back"
-            android:onClick="goBack"/>
+            />
 
         <EditText
             android:id="@+id/merchant"
@@ -115,7 +115,7 @@
                         android:layout_width="50dp"
                         android:layout_height="match_parent"
                         android:layout_margin="2dp"
-                        android:src="@drawable/ic_action_cashMoney" />
+                        android:src="@drawable/ic_action_cashmoney" />
                     <!-- Where the resulting text will appear -->
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -159,7 +159,7 @@
                         android:layout_width="50dp"
                         android:layout_height="match_parent"
                         android:layout_margin="2dp"
-                        android:src="@drawable/ic_action_cashMoney" />
+                        android:src="@drawable/ic_action_cashmoney" />
                     <!-- Where the resulting text will appear -->
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -289,8 +289,6 @@
                         android:layout_height="50dp"
                         android:layout_margin="2dp"
                         android:src="@drawable/ic_action_photo"
-                        android:background=" "
-                        android:onClick="addPhoto"
                         style="@style/Widget.AppCompat.Button.Borderless"/>
                     <!-- Where the resulting text will appear -->
                     <LinearLayout
