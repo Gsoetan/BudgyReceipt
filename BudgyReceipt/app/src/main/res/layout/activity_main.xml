@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginBottom="350dp"
+        app:layout_constraintBottom_toTopOf="@+id/home"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,97 +29,40 @@
                 app:cardElevation="5dp"
                 app:cardUseCompatPadding="true">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="5dp">
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent">
 
-                    <TextView
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Result"
-                        android:textColor="@color/red_text"
-                        android:textSize="20sp" />
-                    <!-- Where the resulting text will appear -->
-                    <EditText
-                        android:id="@+id/resultEt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:autoLink="all"
-                        android:background="@null"
-                        android:hint=""
-                        android:padding="5dp" />
-                </LinearLayout>
+                        android:layout_alignParentLeft="true">
+
+
+                        <Button
+                            android:id="@+id/B1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginRight="8dp"
+                            android:text="BestBuy"
+                            android:textColor="#8B000000"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/price1"
+                            android:layout_width="103dp"
+                            android:layout_height="match_parent"
+                            android:elevation="50dp"
+                            android:text="$82.54"
+                            android:textColor="#0765F3"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                    </FrameLayout>
+
+                </RelativeLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#fff"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="5dp"
-                app:cardUseCompatPadding="true">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Image preview"
-                        android:textColor="@color/red_text"
-                        android:textSize="20sp" />
-                    <!-- Where the image taken will display -->
-                    <ImageView
-                        android:id="@+id/imageIv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxHeight="250dp" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="#fff"
-            app:cardCornerRadius="3dp"
-            app:cardElevation="5dp"
-            app:cardUseCompatPadding="true">
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="match_parent" >
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true">
-
-
-                    <Button
-                        android:id="@+id/B1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginRight="8dp"
-                        android:text="BestBuy"
-                        android:textColor="#8B000000"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/price1"
-                        android:layout_width="103dp"
-                        android:layout_height="match_parent"
-                        android:elevation="50dp"
-                        android:text="$82.54"
-                        android:textColor="#0765F3"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                </FrameLayout>
-
-            </RelativeLayout>
-        </androidx.cardview.widget.CardView>
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -127,7 +73,8 @@
 
                 <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
+
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -157,6 +104,7 @@
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -167,7 +115,8 @@
 
                 <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
+
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -197,6 +146,7 @@
 
                 </RelativeLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -207,7 +157,8 @@
 
                 <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent">
+
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -251,6 +202,18 @@
         app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Budgy Receipts"
+        app:titleTextColor="#040303" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
