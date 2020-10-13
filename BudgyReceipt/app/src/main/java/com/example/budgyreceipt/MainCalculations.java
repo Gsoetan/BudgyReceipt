@@ -57,7 +57,7 @@ public class MainCalculations {
                 subtotal = prices.get(subtotalIndex);
                 break;
             }
-            if (a.toLowerCase().contains("total")){ // look for just the total
+            if (a.toLowerCase().contains("total")  || a.toLowerCase().contains("balance due")){ // look for just the total
                 float total_amount = (float) 00.01;
                 for (float item: pricesTemp) {
                     if (item > total_amount){

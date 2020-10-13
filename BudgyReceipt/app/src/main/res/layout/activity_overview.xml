@@ -289,7 +289,8 @@
                         android:layout_height="50dp"
                         android:layout_margin="2dp"
                         android:src="@drawable/ic_action_photo"
-                        style="@style/Widget.AppCompat.Button.Borderless"/>
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:onClick="addPhoto"/>
                     <!-- Where the resulting text will appear -->
                     <LinearLayout
                         android:layout_width="wrap_content"

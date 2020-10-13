@@ -23,12 +23,15 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Space;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
@@ -45,7 +48,6 @@ public class OverviewActivity extends AppCompatActivity {
     private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
     private ImageView oPhotoIv;
     ImageButton clickme;
-
 
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 400;
@@ -83,10 +85,11 @@ public class OverviewActivity extends AppCompatActivity {
         //storage permission
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+        Spinner tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.tags, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        tags.setAdapter(adapter);
     }
-
-
-
 
 
     public void saveData(View view) {
@@ -95,7 +98,6 @@ public class OverviewActivity extends AppCompatActivity {
     }
 
     public void addPhoto(View view) {
-
         showImageImportDialog();
     }
 
@@ -104,27 +106,17 @@ public class OverviewActivity extends AppCompatActivity {
         String [] items = {"Camera", "Gallery"};
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         // Set title
-        dialog.setTitle("Select image source");
+        dialog.setTitle("Select source");
         dialog.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     //camera option clicked
-                    if (!checkCameraPermission()){
-                        //camera permission denied
-                        requestCameraPermission();
-                    } else {
-                        pickCamera();
-                    }
+                    if (!checkCameraPermission()){ requestCameraPermission(); } else { pickCamera(); } //check if camera permission allowed
                 }
                 if (which == 1) {
                     //gallery option clicked
-                    if (!checkStoragePermission()){
-                        //camera permission denied
-                        requestStoragePermission();
-                    } else {
-                        pickGallery();
-                    }
+                    if (!checkStoragePermission()){ requestStoragePermission(); } else { pickGallery(); } //check if storage permission allowed
                 }
             }
         });
@@ -141,8 +133,8 @@ public class OverviewActivity extends AppCompatActivity {
 
     private void pickCamera() {
         ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "NewPic"); //title of pic
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Image to text"); // description
+        values.put(MediaStore.Images.Media.TITLE, "New Picture"); //title of pic
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Image converted to text"); // description
         image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -171,7 +163,7 @@ public class OverviewActivity extends AppCompatActivity {
 
     //handle permission result
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) { // https://stackoverflow.com/questions/52502453/import-image-from-camera-or-gallery-app-crash
         switch (requestCode) {
             case CAMERA_REQUEST_CODE:
                 if(grantResults.length > 0){
@@ -229,7 +221,7 @@ public class OverviewActivity extends AppCompatActivity {
                 TextRecognizer recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
 
                 if (!recognizer.isOperational()) { // if there was a problem with the recognizer return an error
-                    Toast.makeText(this, "error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "there was an error", Toast.LENGTH_SHORT).show();
                 } else {
                     Frame frame = new Frame.Builder().setBitmap(bitmap).build();
                     SparseArray<TextBlock> items = recognizer.detect(frame);
