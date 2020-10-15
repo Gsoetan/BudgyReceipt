@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button add_item_button;
+    Button add_item_button, button1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, OverviewActivity.class));
             }
             });
+
+        button1 = (Button) findViewById(R.id.B1);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
+            }
+        });
     }
 
     //actionbar menu (settings)
