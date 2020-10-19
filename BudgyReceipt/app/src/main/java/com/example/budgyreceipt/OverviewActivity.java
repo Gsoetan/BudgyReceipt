@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.SparseArray;
 import android.view.View;
@@ -37,9 +38,11 @@ import static com.example.budgyreceipt.MainCalculations.stringParse;
 
 public class OverviewActivity extends AppCompatActivity {
 
+    DatabaseHelper overviews;
     private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
     private ImageView oPhotoIv;
-    ImageButton go_back;
+    ImageButton go_back, save_data;
+    Spinner tags;
 
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 400;
@@ -64,11 +67,39 @@ public class OverviewActivity extends AppCompatActivity {
         oPaymentEt = findViewById(R.id.payment);
         oPhotoIv = findViewById(R.id.photo);
 
-        go_back = (ImageButton)findViewById(R.id.backButton);
+        overviews = new DatabaseHelper(this);
+
+        save_data = findViewById(R.id.saveButton);
+        save_data.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String titleEt = oTitleEt.getText().toString();
+                String dateEt = oDateEt.getText().toString();
+                String totalEt = oTotalEt.getText().toString();
+                String subtotalEt = oSubTotalEt.getText().toString();
+                String tagSelection = tags.getSelectedItem().toString();
+                String paymentEt = oPaymentEt.getText().toString();
+                if (oTitleEt.length() != 0 || oDateEt.length() != 0 || oTotalEt.length() != 0 || oSubTotalEt.length() != 0 || oPaymentEt.length() != 0){ // check to make sure at least one entry is filled
+                    addData(titleEt, dateEt, totalEt, subtotalEt, tagSelection, paymentEt);
+                    oTitleEt.setText("");
+                    oDateEt.setText("");
+                    oTotalEt.setText("");
+                    oSubTotalEt.setText("");
+                    tags.setSelection(0);
+                    oPaymentEt.setText("");
+                    oPhotoIv.setImageURI(null); //not working yet
+                } else {
+                    Toast.makeText(OverviewActivity.this, "At least one field must be filled.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        go_back = findViewById(R.id.backButton);
         go_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(OverviewActivity.this, MainActivity.class));
+                finish();
             }
         });
 
@@ -77,16 +108,22 @@ public class OverviewActivity extends AppCompatActivity {
         //storage permission
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-        Spinner tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
+        tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.tags, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tags.setAdapter(adapter);
     }
 
+    // https://developer.android.com/guide/topics/ui/settings/use-saved-values
+    // https://developer.android.com/topic/libraries/architecture/saving-states
+    public void addData(String title, String date, String total, String subtotal, String tag, String payment) {
+        Boolean insertData = overviews.addData(title, date, total, subtotal, tag, payment);
 
-    public void saveData(View view) {
-        // https://developer.android.com/guide/topics/ui/settings/use-saved-values
-        // https://developer.android.com/topic/libraries/architecture/saving-states
+        if (insertData == true) {
+            Toast.makeText(OverviewActivity.this, "Entry saved", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(OverviewActivity.this, "Oops! Something went wrong.", Toast.LENGTH_LONG).show();
+        }
     }
 
     public void addPhoto(View view) {

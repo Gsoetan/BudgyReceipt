@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_gravity="center_horizontal"
-            android:text="Title Here"
+            android:hint="Title Here"
             android:textSize="25sp" />
 
         <ImageButton
