@@ -8,28 +8,22 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private SQLiteDatabase db = this.getWritableDatabase();
-
     static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "itemEntries.db";
-    public static final String TABLE_NAME = "itemEntries_data";
-    public static final String COL1 = "ID";
-    public static final String COL2 = "Title";
-    public static final String COL3 = "Date";
-    public static final String COL4 = "Total";
-    public static final String COL5 = "Sub-total";
-    public static final String COL6 = "Tag";
-    public static final String COL7 = "Payment";
+    public static final String TABLE_NAME = "itemEntries";
+    public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_TITLE = "Title";
+    public static final String COLUMN_DATE = "Date";
+    public static final String COLUMN_TOTAL = "Total";
+    public static final String COLUMN_SUB_TOTAL = "Sub_total";
+    public static final String COLUMN_TAG = "Tag";
+    public static final String COLUMN_PAYMENT = "Payment";
     // public static final String COL8 = "photo";
 
-    public static final String CREATE_DATABASE = "CREATE TABLE " + TABLE_NAME + " (ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COL2 + " TEXT, " + //title
-            COL3 + " TEXT, " + //date
-            COL4 + " TEXT, " + //total
-            COL5 + " TEXT, " + //sub-total
-            COL6 + " TEXT, " + //tag
-            COL7 + " TEXT);"; //payment
+    public static final String CREATE_DATABASE = "CREATE TABLE " + TABLE_NAME + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + COLUMN_TITLE + " TEXT, " + COLUMN_DATE + " TEXT, " + COLUMN_TOTAL + " TEXT, " + COLUMN_SUB_TOTAL + " TEXT, " + COLUMN_TAG + " TEXT, " + COLUMN_PAYMENT + " TEXT)";
     //add photo to query later
+
+    public static final String DELETE_DATABASE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     public DatabaseHelper (Context context) { super(context, DATABASE_NAME, null, DATABASE_VERSION); } // https://stackoverflow.com/questions/28665039/android-database-sqlite-sqliteexception-near-syntax-error-code-1-while/28665290
 
@@ -40,19 +34,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL(DELETE_DATABASE);
         onCreate(db);
     }
 
     public boolean addData (String title, String date, String total, String subtotal, String tag, String payment) { // add photo later
-        // SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL2, title);
-        contentValues.put(COL3, date);
-        contentValues.put(COL4, total);
-        contentValues.put(COL5, subtotal);
-        contentValues.put(COL6, tag);
-        contentValues.put(COL7, payment);
+        contentValues.put(COLUMN_TITLE, title);
+        contentValues.put(COLUMN_DATE, date);
+        contentValues.put(COLUMN_TOTAL, total);
+        contentValues.put(COLUMN_SUB_TOTAL, subtotal);
+        contentValues.put(COLUMN_TAG, tag);
+        contentValues.put(COLUMN_PAYMENT, payment);
         // contentValues.put(COL8, photo);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
@@ -66,9 +60,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getListContents() {
-        // SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase db = this.getWritableDatabase();
         // Cursor data = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
-        String[] colValues = new String[] {COL2, COL3, COL4, COL5, COL6, COL7};
+        String[] colValues = new String[] {COLUMN_TITLE, COLUMN_DATE, COLUMN_TOTAL, COLUMN_SUB_TOTAL, COLUMN_TAG, COLUMN_PAYMENT};
         Cursor data = db.query(TABLE_NAME, colValues, null, null, null, null, null);
         return data;
     }

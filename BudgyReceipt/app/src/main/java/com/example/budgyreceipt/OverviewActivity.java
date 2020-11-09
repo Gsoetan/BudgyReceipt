@@ -73,6 +73,8 @@ public class OverviewActivity extends AppCompatActivity {
         save_data.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DatabaseHelper databaseHelper = new DatabaseHelper(OverviewActivity.this);
+
                 String titleEt = oTitleEt.getText().toString();
                 String dateEt = oDateEt.getText().toString();
                 String totalEt = oTotalEt.getText().toString();
