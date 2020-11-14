@@ -31,9 +31,9 @@ public class Receipt {
         mUpdateTime = System.currentTimeMillis();
     }
 
-    public Receipt(@NonNull String merchant, @NonNull String total) {
+    public Receipt(@NonNull String merchant) {
         mMerchant = merchant;
-        mTotal = total;
+        mTotal = "0.00";
         mUpdateTime = System.currentTimeMillis();
     }
 

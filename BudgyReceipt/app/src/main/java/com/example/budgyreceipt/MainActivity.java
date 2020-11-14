@@ -2,6 +2,7 @@ package com.example.budgyreceipt;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,42 +18,27 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ReceiptFragment.OnReceiptCreatedListener {
 
-    Button add_item_button, button1;
-    DatabaseHelper overviews;
+    Button add_item_button;
+    private ReceiptDatabase mReceiptdb;
+    private ReceiptAdapter mReceiptAdapter;
+    private RecyclerView mRecyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ListView trial = (ListView) findViewById(R.id.trial);
+        mReceiptdb = ReceiptDatabase.getInstance(getApplicationContext());
 
-        overviews = new DatabaseHelper(this);
+        mRecyclerView = findViewById(R.id.receiptRecyclerView);
 
-        ArrayList<String> titles = new ArrayList<>();
-        ArrayList<String> dates = new ArrayList<>();
-        ArrayList<String> totals = new ArrayList<>();
-        ArrayList<String> subtotals = new ArrayList<>();
-        ArrayList<String> tags = new ArrayList<>();
-        ArrayList<String> payments = new ArrayList<>();
-        // ArrayList<String> photos = new ArrayList<>();
-        Cursor data = overviews.getListContents();
+        //maybe add layout manager for horizontal bars? idk yet
 
-
-        while(data.moveToNext()){
-            titles.add(data.getString(1));
-            dates.add(data.getString(2));
-            totals.add(data.getString(3));
-            subtotals.add(data.getString(4));
-            tags.add(data.getString(5));
-            payments.add(data.getString(6));
-            // titles.add(data.getString(7));
-
-            ListAdapter listTitles = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,titles);
-            trial.setAdapter(listTitles);
-        }
+        mReceiptAdapter = new ReceiptAdapter(getReceipts()); // gotta set this
+        mRecyclerView.setAdapter(mReceiptAdapter);
 
 
         // Switch from Main to OverviewActivity
@@ -63,14 +49,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, OverviewActivity.class));
             }
             });
+    }
 
-        button1 = (Button) findViewById(R.id.B1);
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-            }
-        });
+    @Override
+    public void onReceiptCreated(String receiptMerchant) {
+        if (receiptMerchant.length() > 0) {
+            Receipt receipt = new Receipt(receiptMerchant);
+            long receiptId = mReceiptdb.receiptDao().insertReceipt(receipt);
+            receipt.setId(receiptId);
+
+            // TODO: add subject to recycler view
+            // TODO: add toast to confirm addition of merchant
+        }
     }
 
     //actionbar menu (settings)
@@ -95,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        overviews.close();
         super.onDestroy();
     }
+
+
 }
