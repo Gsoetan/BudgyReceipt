@@ -3,10 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".OverviewActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <GridLayout
+    <LinearLayout
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -18,14 +17,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/merchant"
+            android:id="@+id/merchantEt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_gravity="center_horizontal"
             android:hint="Title Here"
             android:textSize="25sp" />
-    </GridLayout>
+
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -72,12 +72,13 @@
                             android:layout_marginLeft="5dp"
                             android:text="Date" />
 
-                        <TextView
-                            android:id="@+id/date"
+                        <EditText
+                            android:id="@+id/dateEt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
+                            android:hint="Enter date here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -115,12 +116,13 @@
                             android:layout_marginLeft="5dp"
                             android:text="Total" />
 
-                        <TextView
-                            android:id="@+id/total"
+                        <EditText
+                            android:id="@+id/totalEt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
+                            android:hint="Enter total here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -158,12 +160,13 @@
                             android:layout_marginLeft="5dp"
                             android:text="Sub-Total" />
 
-                        <TextView
-                            android:id="@+id/subTotal"
+                        <EditText
+                            android:id="@+id/subTotalEt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
+                            android:hint="Enter sub-total here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -201,8 +204,8 @@
                             android:layout_marginLeft="5dp"
                             android:text="Tag" />
 
-                        <TextView
-                            android:id="@+id/tag"
+                        <Spinner
+                            android:id="@+id/tagEt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp" />
@@ -242,11 +245,12 @@
                             android:layout_marginLeft="5dp"
                             android:text="Form of payment" />
 
-                        <TextView
-                            android:id="@+id/payment"
+                        <EditText
+                            android:id="@+id/paymentEt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
+                            android:hint="Enter payment type here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -273,7 +277,8 @@
                         android:layout_height="50dp"
                         android:layout_margin="2dp"
                         android:src="@drawable/ic_action_photo"
-                        style="@style/Widget.AppCompat.Button.Borderless" />
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:onClick="addPhoto"/>
                     <!-- Where the resulting text will appear -->
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -300,7 +305,7 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/editText"
+        android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -310,6 +315,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView2"
         app:layout_constraintVertical_bias="0.896"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
