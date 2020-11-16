@@ -2,10 +2,13 @@ package com.example.budgyreceipt;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -19,18 +22,26 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+import com.google.android.material.navigation.NavigationView;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import static com.example.budgyreceipt.MainCalculations.stringParse;
@@ -39,7 +50,9 @@ public class OverviewActivity extends AppCompatActivity {
 
     private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
     private ImageView oPhotoIv;
-    ImageButton go_back;
+    private ImageButton clickme;
+    private DrawerLayout draw;
+    private ActionBarDrawerToggle test;
 
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 400;
@@ -50,7 +63,7 @@ public class OverviewActivity extends AppCompatActivity {
     String[] storagePermission;
     String[] entries;
 
-    Uri image_uri; // image source
+    Uri image_uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +77,8 @@ public class OverviewActivity extends AppCompatActivity {
         oPaymentEt = findViewById(R.id.payment);
         oPhotoIv = findViewById(R.id.photo);
 
-        go_back = (ImageButton)findViewById(R.id.backButton);
-        go_back.setOnClickListener(new View.OnClickListener() {
+        clickme = (ImageButton)findViewById(R.id.backButton);
+        clickme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(OverviewActivity.this, MainActivity.class));
@@ -81,6 +94,8 @@ public class OverviewActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.tags, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tags.setAdapter(adapter);
+
+
     }
 
 
@@ -104,13 +119,11 @@ public class OverviewActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     //camera option clicked
-                    checkCameraPermission(); //check if camera permission allowed
-                    pickCamera();
+                    if (!checkCameraPermission()){ requestCameraPermission(); } else { pickCamera(); } //check if camera permission allowed
                 }
                 if (which == 1) {
                     //gallery option clicked
-                    checkStoragePermission(); //check if storage permission allowed
-                    pickGallery();
+                    if (!checkStoragePermission()){ requestStoragePermission(); } else { pickGallery(); } //check if storage permission allowed
                 }
             }
         });
@@ -119,15 +132,15 @@ public class OverviewActivity extends AppCompatActivity {
 
     private void pickGallery() {
         //intent to pick image from gallery
-        Intent intent = new Intent(Intent.ACTION_PICK); //
-        //set intent to open up your images
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        //set intent type to image
         intent.setType("image/*");
         startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE);
     }
 
     private void pickCamera() {
-        ContentValues values = new ContentValues(); // https://developer.android.com/guide/topics/providers/content-providers
-        values.put(MediaStore.Images.Media.TITLE, "New Picture"); //title of picture
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "New Picture"); //title of pic
         values.put(MediaStore.Images.Media.DESCRIPTION, "Image converted to text"); // description
         image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
@@ -136,23 +149,26 @@ public class OverviewActivity extends AppCompatActivity {
         startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
     }
 
-    private void checkStoragePermission() { // check to see if user has granted application access to photos on device
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != (PackageManager.PERMISSION_GRANTED)) {
-            ActivityCompat.requestPermissions(this, storagePermission, STORAGE_REQUEST_CODE);
-        }
-        return;
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, storagePermission, STORAGE_REQUEST_CODE);
     }
 
-    private void checkCameraPermission() { // check to see if user has granted permission for application to take photos using camera as well as permission to save it (more for camera option)
+    private boolean checkStoragePermission() { // check to see if user has granted application access to photos on device
+        boolean writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return writePermission;
+    }
+
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(this, cameraPermission, CAMERA_REQUEST_CODE);
+    }
+
+    private boolean checkCameraPermission() { // check to see if user has granted permission for application to take photos using camera as well as permission to save it (more for camera option)
         boolean camPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
         boolean writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        if (camPermission != writePermission){
-            ActivityCompat.requestPermissions(this, cameraPermission, CAMERA_REQUEST_CODE);
-        }
-        return;
+        return camPermission && writePermission;
     }
 
-    //handle the permission request result
+    //handle permission result
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) { // https://stackoverflow.com/questions/52502453/import-image-from-camera-or-gallery-app-crash
         switch (requestCode) {
@@ -186,13 +202,13 @@ public class OverviewActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                //got image from gallery, now crop it
+                //got image from gallery, now crop
                 CropImage.activity(data.getData())
                         .setGuidelines(CropImageView.Guidelines.ON) // enable image guidelines
                         .start(this);
             }
             if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                //got image from camera, now crop it
+                //got image from camera, now crop
                 CropImage.activity(image_uri)
                         .setGuidelines(CropImageView.Guidelines.ON) // enable image guidelines
                         .start(this);
@@ -224,6 +240,7 @@ public class OverviewActivity extends AppCompatActivity {
                         sb.append("\n");
                     }
                     //set all entries to their respective values
+                    oTotalEt.setText(sb.toString());
                     entries = stringParse(sb); //returns a array in format {date, payment, total, subtotal}
                     oDateEt.setText(entries[0]);
                     oPaymentEt.setText(entries[1]);
