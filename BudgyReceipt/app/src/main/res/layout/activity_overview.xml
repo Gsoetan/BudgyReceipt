@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -8,8 +9,8 @@
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:rowCount="1"
         android:columnCount="4"
+        android:rowCount="1"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,8 +20,7 @@
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_action_back"
-            />
+            android:src="@drawable/ic_action_back" />
 
         <EditText
             android:id="@+id/merchant"
@@ -35,8 +35,8 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_action_save"
-            android:onClick="saveData"/>
+            android:onClick="saveData"
+            android:src="@drawable/ic_action_save" />
     </GridLayout>
 
     <ScrollView
@@ -315,5 +315,7 @@
 
         </LinearLayout>
     </ScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
