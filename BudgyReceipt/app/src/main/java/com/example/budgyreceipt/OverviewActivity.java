@@ -91,11 +91,6 @@ public class OverviewActivity extends AppCompatActivity {
             overview.setReceiptId(mReceiptId);
             mReceiptDb.overviewDao().insertOverview(overview);
             showReceiptContents(true);
-//            mDate.setText("");
-//            mTotal.setText("");
-//            mSubTotal.setText("");
-//            mTag.setText("");
-//            mPayment.setText("");
         }
     }
 
