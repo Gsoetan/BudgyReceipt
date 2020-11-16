@@ -6,6 +6,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,35 +19,30 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.Space;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.text.TextBlock;
-import com.google.android.gms.vision.text.TextRecognizer;
-import com.google.android.material.navigation.NavigationView;
-import com.theartofdev.edmodo.cropper.CropImage;
-import com.theartofdev.edmodo.cropper.CropImageActivity;
-import com.theartofdev.edmodo.cropper.CropImageView;
+import java.util.ArrayList;
+import java.util.List;
 
-import static com.example.budgyreceipt.MainCalculations.stringParse;
+// This is also the receipt activity that will store all of the user created receipt entities
+public class MainActivity extends AppCompatActivity implements ReceiptFragment.OnReceiptCreatedListener {
 
-public class MainActivity extends AppCompatActivity {
+    private ReceiptDatabase mReceiptdb;
+    private ReceiptAdapter mReceiptAdapter;
+    private RecyclerView mRecyclerView;
+
 
     private Button clickme;
     private DrawerLayout draw;
@@ -60,6 +58,93 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        mReceiptdb = ReceiptDatabase.getInstance(getApplicationContext());
+
+        mRecyclerView = findViewById(R.id.receiptRecyclerView);
+        RecyclerView.LayoutManager gridLayoutManager =
+                new GridLayoutManager(getApplicationContext(), 1);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+
+        //maybe add layout manager for horizontal bars? idk yet
+
+        updateView();
+    }
+
+    @Override
+    public void onReceiptCreated(String receiptMerchant) {
+        if (receiptMerchant.length() > 0) {
+            Receipt receipt = new Receipt(receiptMerchant);
+            long receiptId = mReceiptdb.receiptDao().insertReceipt(receipt);
+            receipt.setId(receiptId);
+
+            updateView();
+            Toast.makeText(this, "Added " + receiptMerchant, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateView() {
+        mReceiptAdapter = new ReceiptAdapter(getReceipts());
+        mRecyclerView.setAdapter(mReceiptAdapter);
+    }
+
+    public void addReceiptClick(View view) { // adds a new fragment and receipt
+        FragmentManager manager = getSupportFragmentManager();
+        ReceiptFragment frag = new ReceiptFragment();
+        frag.show(manager, "receiptFragment");
+    }
+
+    private List<Receipt> getReceipts() { return mReceiptdb.receiptDao().getReceiptsNew(); } // load the receipts into the activity based off newest additions
+
+    private class ReceiptHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
+
+        private Receipt mReceipt;
+        private TextView mText_merchant, mText_total, mText_date;
+
+        public ReceiptHolder(LayoutInflater inflater, ViewGroup parent){
+            super(inflater.inflate(R.layout.recycler_view_items, parent, false));
+            itemView.setOnClickListener(this);
+            mText_merchant = itemView.findViewById(R.id.merchant_text);
+            mText_total = itemView.findViewById(R.id.total_text);
+            mText_date = itemView.findViewById(R.id.date_text);
+        }
+
+        public void bind(Receipt receipt) { // make the fragment
+            mReceipt = receipt;
+            mText_merchant.setText(receipt.getMerchant());
+            mText_total.setText("$" + receipt.getTotal());
+            // TODO: mText_date.setText();
+        }
+
+        @Override
+        public void onClick(View v) {
+            // Start the Overview activity with the selected receipt
+            Intent intent = new Intent(MainActivity.this, OverviewActivity.class);
+            intent.putExtra(OverviewActivity.EXTRA_RECEIPT_ID, mReceipt.getId());
+            startActivity(intent);
+        }
+    }
+
+    private class ReceiptAdapter extends RecyclerView.Adapter<ReceiptHolder> {
+
+        private List<Receipt> mReceiptList;
+
+        public ReceiptAdapter(List<Receipt> receipts) { mReceiptList = receipts; }
+
+        @NonNull
+        @Override
+        public ReceiptHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
+            return new ReceiptHolder(layoutInflater, parent);
+        }
+
+        @Override
+        public void onBindViewHolder(ReceiptHolder holder, int position) {
+            holder.bind(mReceiptList.get(position));
+        }
+
+        @Override
+        public int getItemCount() { return mReceiptList.size(); }
+      
         draw.addDrawerListener(test);
         test.syncState();
 
@@ -82,14 +167,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-        // Switch from Main to OverviewActivity
-        clickme = (Button)findViewById(R.id.home);
-        clickme.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, OverviewActivity.class));
-            }
-            });
     }
 
     //actionbar menu (settings)
@@ -113,4 +190,8 @@ public class MainActivity extends AppCompatActivity {
         return test.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

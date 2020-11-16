@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
@@ -8,206 +8,24 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
-    <ScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/receiptRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#fff"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="5dp"
-                app:cardUseCompatPadding="true">
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent">
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true">
-
-
-                        <Button
-                            android:id="@+id/B1"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="8dp"
-                            android:text="BestBuy"
-                            android:textColor="#8B000000"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/price1"
-                            android:layout_width="103dp"
-                            android:layout_height="match_parent"
-                            android:elevation="50dp"
-                            android:text="$82.54"
-                            android:textColor="#0765F3"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                    </FrameLayout>
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#fff"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="5dp"
-                app:cardUseCompatPadding="true">
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent">
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true">
-
-
-                        <Button
-                            android:id="@+id/B2"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="8dp"
-                            android:text="Whole Foods"
-                            android:textColor="#8B000000"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/price2"
-                            android:layout_width="103dp"
-                            android:layout_height="match_parent"
-                            android:elevation="50dp"
-                            android:text="$282.54"
-                            android:textColor="#0765F3"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                    </FrameLayout>
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#fff"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="5dp"
-                app:cardUseCompatPadding="true">
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent">
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true">
-
-
-                        <Button
-                            android:id="@+id/B3"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="8dp"
-                            android:text="Walmart"
-                            android:textColor="#8B000000"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/price3"
-                            android:layout_width="103dp"
-                            android:layout_height="match_parent"
-                            android:elevation="50dp"
-                            android:text="$182.54"
-                            android:textColor="#0765F3"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                    </FrameLayout>
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="#fff"
-                app:cardCornerRadius="3dp"
-                app:cardElevation="5dp"
-                app:cardUseCompatPadding="true">
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="match_parent">
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true">
-
-
-                        <Button
-                            android:id="@+id/B4"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_marginRight="8dp"
-                            android:text="Publix"
-                            android:textColor="#8B000000"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/price4"
-                            android:layout_width="103dp"
-                            android:layout_height="match_parent"
-                            android:elevation="50dp"
-                            android:text="$342.54"
-                            android:textColor="#0765F3"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                    </FrameLayout>
-
-                </RelativeLayout>
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-
-
-    <Button
-        android:id="@+id/home"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
+        android:onClick="addReceiptClick"
         android:text="+"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.95"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_gravity="end|bottom"
+        android:layout_margin="15dp"
+        app:srcCompat="@android:drawable/ic_menu_add"/>
 
+</FrameLayout>
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="248dp"
@@ -228,3 +46,4 @@
     </androidx.drawerlayout.widget.DrawerLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

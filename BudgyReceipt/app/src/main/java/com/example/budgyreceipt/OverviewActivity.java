@@ -1,6 +1,5 @@
 package com.example.budgyreceipt;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -10,15 +9,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.SparseArray;
@@ -29,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -38,220 +30,128 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.vision.text.TextRecognizer;
 import com.google.android.material.navigation.NavigationView;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageActivity;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import static com.example.budgyreceipt.MainCalculations.stringParse;
+import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
 
+    private final int REQUEST_CODE_UPDATE_ENTRY = 1;
+  
     private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
     private ImageView oPhotoIv;
     private ImageButton clickme;
-    private DrawerLayout draw;
-    private ActionBarDrawerToggle test;
 
-    private static final int CAMERA_REQUEST_CODE = 200;
-    private static final int STORAGE_REQUEST_CODE = 400;
-    private static final int IMAGE_PICK_GALLERY_CODE = 1000;
-    private static final int IMAGE_PICK_CAMERA_CODE = 1001;
+    private ReceiptDatabase mReceiptDb;
+    private long mReceiptId;
+    private List<Overview> mOverviewList;
+    private TextView mTitle, mDate, mTotal, mSubTotal, mPayment, mTag;
+    private ImageView mPhoto;
+    private FloatingActionButton edit;
 
-    String[] cameraPermission;
-    String[] storagePermission;
-    String[] entries;
-
-    Uri image_uri;
+    public static final String EXTRA_RECEIPT_ID = "com.example.budgyreceipt.receipt_id";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
 
-        oTitleEt = findViewById(R.id.merchant);
-        oDateEt = findViewById(R.id.date);
-        oTotalEt = findViewById(R.id.total);
-        oSubTotalEt = findViewById(R.id.subTotal);
-        oPaymentEt = findViewById(R.id.payment);
-        oPhotoIv = findViewById(R.id.photo);
+        // MainActivity should've provided the receipt id of the overview to display
+        Intent intent = getIntent();
+        mReceiptId = intent.getLongExtra(EXTRA_RECEIPT_ID, -1);
 
-        clickme = (ImageButton)findViewById(R.id.backButton);
-        clickme.setOnClickListener(new View.OnClickListener() {
+        // get the entry data for this overview
+        getEntryData();
+
+        mTitle = findViewById(R.id.merchant);
+        mDate = findViewById(R.id.date);
+        mTotal = findViewById(R.id.total);
+        mSubTotal = findViewById(R.id.subTotal);
+        mPayment = findViewById(R.id.payment);
+        mPhoto = findViewById(R.id.photo);
+        mTag = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
+
+
+        edit = findViewById(R.id.editText);
+        edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OverviewActivity.this, MainActivity.class));
+                editOverview();
             }
         });
 
-        //camera permissions
-        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        //storage permission
-        storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
-        Spinner tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.tags, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        tags.setAdapter(adapter);
-
-
     }
 
-
-    public void saveData(View view) {
-        // https://developer.android.com/guide/topics/ui/settings/use-saved-values
-        // https://developer.android.com/topic/libraries/architecture/saving-states
+    private void getEntryData() {
+        mReceiptDb = ReceiptDatabase.getInstance(getApplicationContext());
+        mOverviewList = mReceiptDb.overviewDao().getOverviews(mReceiptId);
     }
 
-    public void addPhoto(View view) {
-        showImageImportDialog();
-    }
-
-    private void showImageImportDialog(){
-        //items to display in dialog
-        String [] items = {"Camera", "Gallery"};
-        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        // Set title
-        dialog.setTitle("Select source");
-        dialog.setItems(items, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    //camera option clicked
-                    if (!checkCameraPermission()){ requestCameraPermission(); } else { pickCamera(); } //check if camera permission allowed
-                }
-                if (which == 1) {
-                    //gallery option clicked
-                    if (!checkStoragePermission()){ requestStoragePermission(); } else { pickGallery(); } //check if storage permission allowed
-                }
-            }
-        });
-        dialog.create().show(); // show dialog
-    }
-
-    private void pickGallery() {
-        //intent to pick image from gallery
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        //set intent type to image
-        intent.setType("image/*");
-        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE);
-    }
-
-    private void pickCamera() {
-        ContentValues values = new ContentValues();
-        values.put(MediaStore.Images.Media.TITLE, "New Picture"); //title of pic
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Image converted to text"); // description
-        image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
-        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
-    }
-
-    private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this, storagePermission, STORAGE_REQUEST_CODE);
-    }
-
-    private boolean checkStoragePermission() { // check to see if user has granted application access to photos on device
-        boolean writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return writePermission;
-    }
-
-    private void requestCameraPermission() {
-        ActivityCompat.requestPermissions(this, cameraPermission, CAMERA_REQUEST_CODE);
-    }
-
-    private boolean checkCameraPermission() { // check to see if user has granted permission for application to take photos using camera as well as permission to save it (more for camera option)
-        boolean camPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
-        boolean writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
-        return camPermission && writePermission;
-    }
-
-    //handle permission result
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) { // https://stackoverflow.com/questions/52502453/import-image-from-camera-or-gallery-app-crash
-        switch (requestCode) {
-            case CAMERA_REQUEST_CODE:
-                if(grantResults.length > 0){
-                    boolean cameraAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean writeStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (cameraAccepted && writeStorageAccepted) {
-                        pickCamera();
-                    } else {
-                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                break;
-            case STORAGE_REQUEST_CODE:
-                if(grantResults.length > 0){
-                    boolean writeStorageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    if (writeStorageAccepted) {
-                        pickGallery();
-                    } else {
-                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                break;
+    protected void onStart() {
+        super.onStart();
+        if (mOverviewList.size() == 0) { // just checking that there is an entry in the database for this receipt or if empty
+            mTitle.setText(mReceiptDb.receiptDao().getReceipt(mReceiptId).getMerchant());
+            showReceiptContents(false);
+        } else {
+            mTitle.setText(mReceiptDb.receiptDao().getReceipt(mReceiptId).getMerchant());
+            showReceiptContents(true);
         }
     }
 
-    //handle image result
-    @SuppressLint("MissingSuperCall")
+    private void showReceiptContents(boolean showContents) {
+        if (showContents == true) {
+            mDate.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getDate());
+            mTotal.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getTotal());
+            mSubTotal.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getSubtotal());
+            mTag.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getTag());
+            mPayment.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getPayment());
+        } else {
+            Overview overview = new Overview();
+            overview.setDate("01/01/0001");
+            overview.setTotal("0.00");
+            overview.setSubtotal("0.00");
+            overview.setTag("Grocery");
+            overview.setPayment("empty");
+            overview.setReceiptId(mReceiptId);
+            mReceiptDb.overviewDao().insertOverview(overview);
+            showReceiptContents(true);
+        }
+    }
+
+    private void editOverview() {
+        Intent intent = new Intent(this, OverviewEditActivity.class);
+        intent.putExtra(EXTRA_RECEIPT_ID, mReceiptId);
+        getEntryData();
+        long overviewId = mOverviewList.get(0).getId();
+        intent.putExtra(OverviewEditActivity.EXTRA_OVERVIEW_ID, overviewId);
+        startActivityForResult(intent, REQUEST_CODE_UPDATE_ENTRY);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode == RESULT_OK) {
-            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                //got image from gallery, now crop
-                CropImage.activity(data.getData())
-                        .setGuidelines(CropImageView.Guidelines.ON) // enable image guidelines
-                        .start(this);
-            }
-            if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                //got image from camera, now crop
-                CropImage.activity(image_uri)
-                        .setGuidelines(CropImageView.Guidelines.ON) // enable image guidelines
-                        .start(this);
-            }
-        }
-        //get cropped image
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            if (resultCode == RESULT_OK) {
-                Uri resultUri = result.getUri(); //get image uri
-                oPhotoIv.setImageURI(resultUri); //set image to image view
+        super.onActivityResult(requestCode, resultCode, data);
 
-                //make drawable bitmap for text recognition
-                BitmapDrawable bitmapDrawable = (BitmapDrawable) oPhotoIv.getDrawable();
-                Bitmap bitmap = bitmapDrawable.getBitmap();
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_UPDATE_ENTRY) {
 
-                TextRecognizer recognizer = new TextRecognizer.Builder(getApplicationContext()).build();
+            // get updated overview
+            long overviewId = data.getLongExtra(OverviewEditActivity.EXTRA_OVERVIEW_ID, -1);
+            Overview updatedOverview = mReceiptDb.overviewDao().getOverview(overviewId);
 
-                if (!recognizer.isOperational()) { // if there was a problem with the recognizer return an error
-                    Toast.makeText(this, "there was an error", Toast.LENGTH_SHORT).show();
-                } else {
-                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-                    SparseArray<TextBlock> items = recognizer.detect(frame);
-                    StringBuilder sb = new StringBuilder();
-                    //get text for sb until there is nothing left to read
-                    for (int i = 0; i < items.size(); i++) {
-                        TextBlock myItem = items.valueAt(i);
-                        sb.append(myItem.getValue());
-                        sb.append("\n");
-                    }
-                    //set all entries to their respective values
-                    oTotalEt.setText(sb.toString());
-                    entries = stringParse(sb); //returns a array in format {date, payment, total, subtotal}
-                    oDateEt.setText(entries[0]);
-                    oPaymentEt.setText(entries[1]);
-                    oTotalEt.setText(entries[2]);
-                    oSubTotalEt.setText(entries[3]);
-                }
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) { // if there is a problem with the crop tool
-                //if there is any error show it
-                Exception error = result.getError();
-                Toast.makeText(this, "" + error, Toast.LENGTH_SHORT).show();
-            }
+            Overview currentOverview = mOverviewList.get(0);
+            currentOverview.setDate(updatedOverview.getDate());
+            currentOverview.setTotal(updatedOverview.getTotal());
+            currentOverview.setSubtotal(updatedOverview.getSubtotal());
+            currentOverview.setTag(updatedOverview.getTag());
+            currentOverview.setPayment(updatedOverview.getPayment());
+            // grab img
+
+            Toast.makeText(this, "Entries updated", Toast.LENGTH_SHORT).show();
         }
     }
 }

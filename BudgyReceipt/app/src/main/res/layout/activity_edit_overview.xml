@@ -10,8 +10,8 @@
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:columnCount="4"
         android:rowCount="1"
+        android:columnCount="4"
         app:layout_constraintBottom_toTopOf="@+id/scrollView2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +25,6 @@
             android:layout_gravity="center_horizontal"
             android:hint="Title Here"
             android:textSize="25sp" />
-          
     </GridLayout>
 
     <ScrollView
@@ -73,8 +72,10 @@
                             android:layout_marginLeft="5dp"
                             android:text="Date" />
 
-                        <TextView
+                        <EditText
                             android:id="@+id/date"
+                            android:hint="mm/dd/yyyy"
+                            android:inputType="date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
@@ -116,8 +117,10 @@
                             android:layout_marginLeft="5dp"
                             android:text="Total" />
 
-                        <TextView
+                        <EditText
                             android:id="@+id/total"
+                            android:hint="Enter Total"
+                            android:inputType="numberDecimal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
@@ -159,8 +162,10 @@
                             android:layout_marginLeft="5dp"
                             android:text="Sub-Total" />
 
-                        <TextView
+                        <EditText
                             android:id="@+id/subTotal"
+                            android:hint="Enter SubTotal"
+                            android:inputType="numberDecimal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
@@ -202,7 +207,7 @@
                             android:layout_marginLeft="5dp"
                             android:text="Tag" />
 
-                        <TextView
+                        <Spinner
                             android:id="@+id/tag"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -241,10 +246,12 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:text="Form of payment" />
+                            android:text="Form of payment"
+                            android:inputType="text"/>
 
-                        <TextView
+                        <EditText
                             android:id="@+id/payment"
+                            android:hint="Enter payment type"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
@@ -270,6 +277,7 @@
 
                     <ImageButton
                         android:id="@+id/addImage"
+                        android:onClick="addPhoto"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_margin="2dp"
@@ -300,9 +308,8 @@
         </LinearLayout>
     </ScrollView>
 
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/editText"
+        android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -312,6 +319,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView2"
         app:layout_constraintVertical_bias="0.896"
-        app:srcCompat="@android:drawable/ic_menu_edit" />
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

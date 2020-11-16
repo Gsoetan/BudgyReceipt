@@ -26,8 +26,10 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".OverviewActivity"
             android:screenOrientation="portrait"
-            />
-
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".OverviewEditActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".OverviewActivity"/>
     </application>
 
 </manifest>
