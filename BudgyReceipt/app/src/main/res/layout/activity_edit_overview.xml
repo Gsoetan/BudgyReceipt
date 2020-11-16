@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".OverviewActivity">
 
-    <LinearLayout
+    <GridLayout
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -16,16 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
-            android:id="@+id/merchantEt"
+        <TextView
+            android:id="@+id/merchant"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_gravity="center_horizontal"
             android:hint="Title Here"
             android:textSize="25sp" />
-
-    </LinearLayout>
+    </GridLayout>
 
     <ScrollView
         android:id="@+id/scrollView2"
@@ -73,12 +73,13 @@
                             android:text="Date" />
 
                         <EditText
-                            android:id="@+id/dateEt"
+                            android:id="@+id/date"
+                            android:hint="mm/dd/yyyy"
+                            android:inputType="date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
-                            android:hint="Enter date here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -117,12 +118,13 @@
                             android:text="Total" />
 
                         <EditText
-                            android:id="@+id/totalEt"
+                            android:id="@+id/total"
+                            android:hint="Enter Total"
+                            android:inputType="numberDecimal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
-                            android:hint="Enter total here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -161,12 +163,13 @@
                             android:text="Sub-Total" />
 
                         <EditText
-                            android:id="@+id/subTotalEt"
+                            android:id="@+id/subTotal"
+                            android:hint="Enter SubTotal"
+                            android:inputType="numberDecimal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
-                            android:hint="Enter sub-total here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -205,7 +208,7 @@
                             android:text="Tag" />
 
                         <Spinner
-                            android:id="@+id/tagEt"
+                            android:id="@+id/tag"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp" />
@@ -243,14 +246,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:text="Form of payment" />
+                            android:text="Form of payment"
+                            android:inputType="text"/>
 
                         <EditText
-                            android:id="@+id/paymentEt"
+                            android:id="@+id/payment"
+                            android:hint="Enter payment type"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:hint="Enter payment type here"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -273,12 +277,12 @@
 
                     <ImageButton
                         android:id="@+id/addImage"
+                        android:onClick="addPhoto"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_margin="2dp"
                         android:src="@drawable/ic_action_photo"
-                        style="@style/Widget.AppCompat.Button.Borderless"
-                        android:onClick="addPhoto"/>
+                        style="@style/Widget.AppCompat.Button.Borderless" />
                     <!-- Where the resulting text will appear -->
                     <LinearLayout
                         android:layout_width="wrap_content"

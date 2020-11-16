@@ -25,11 +25,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -47,11 +49,13 @@ public class OverviewEditActivity extends AppCompatActivity {
     private ReceiptDatabase mReceiptDb;
     private long mOverviewId;
     private Overview mOverview;
+    private Receipt mReceipt;
 
-    private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
+    private EditText oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
+    private TextView oTitleEt;
     private ImageView oPhotoIv;
     private Spinner tags;
-    private Button save;
+    private FloatingActionButton save;
 
     public static final String EXTRA_RECEIPT_ID = "com.example.budgyreceipt.receipt_id";
     public static final String EXTRA_OVERVIEW_ID = "com.example.budgyreceipt.overview_id";
@@ -71,13 +75,14 @@ public class OverviewEditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_overview);
+        setContentView(R.layout.activity_edit_overview);
 
-        oTitleEt = findViewById(R.id.merchantEt);
-        oDateEt = findViewById(R.id.dateEt);
-        oTotalEt = findViewById(R.id.totalEt);
-        oSubTotalEt = findViewById(R.id.subTotalEt);
-        oPaymentEt = findViewById(R.id.paymentEt);
+        oTitleEt = findViewById(R.id.merchant);
+        oDateEt = findViewById(R.id.date);
+        oTotalEt = findViewById(R.id.total);
+        oSubTotalEt = findViewById(R.id.subTotal);
+        tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
+        oPaymentEt = findViewById(R.id.payment);
         oPhotoIv = findViewById(R.id.photo);
 
         resource_tags = getResources().getStringArray(R.array.tags);
@@ -94,6 +99,8 @@ public class OverviewEditActivity extends AppCompatActivity {
             setTitle("Edit Overview");
         } else {
             mOverview = mReceiptDb.overviewDao().getOverview(mOverviewId);
+            mReceipt = mReceiptDb.receiptDao().getReceipt(mOverviewId);
+            oTitleEt.setText(mReceiptDb.receiptDao().getReceipt(mOverviewId).getMerchant());
             oDateEt.setText(mOverview.getDate());
             oTotalEt.setText(mOverview.getTotal());
             oSubTotalEt.setText(mOverview.getSubtotal());
@@ -120,7 +127,6 @@ public class OverviewEditActivity extends AppCompatActivity {
         //storage permission
         storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-        tags = findViewById(R.id.tagEt); //https://developer.android.com/guide/topics/ui/controls/spinner.html
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.tags, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tags.setAdapter(adapter);
@@ -133,7 +139,10 @@ public class OverviewEditActivity extends AppCompatActivity {
         mOverview.setTag(tags.getSelectedItem().toString());
         mOverview.setPayment(oPaymentEt.getText().toString());
 
+        mReceipt.setTotal(oTotalEt.getText().toString()); // set total to new total
+
         mReceiptDb.overviewDao().updateOverview(mOverview);
+        mReceiptDb.receiptDao().updateReceipt(mReceipt);
 
         Intent intent = new Intent();
         intent.putExtra(EXTRA_OVERVIEW_ID, mOverview.getId());

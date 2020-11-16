@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,8 +21,8 @@ public class OverviewActivity extends AppCompatActivity {
     private ReceiptDatabase mReceiptDb;
     private long mReceiptId;
     private List<Overview> mOverviewList;
-    private TextView oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt, tag;
-    private ImageView oPhotoIv;
+    private TextView mTitle, mDate, mTotal, mSubTotal, mPayment, mTag;
+    private ImageView mPhoto;
     private FloatingActionButton edit;
 
     public static final String EXTRA_RECEIPT_ID = "com.example.budgyreceipt.receipt_id";
@@ -39,16 +37,15 @@ public class OverviewActivity extends AppCompatActivity {
         mReceiptId = intent.getLongExtra(EXTRA_RECEIPT_ID, -1);
 
         // get the entry data for this overview
-        mReceiptDb = ReceiptDatabase.getInstance(getApplicationContext());
-        mOverviewList = mReceiptDb.overviewDao().getOverviews(mReceiptId);
+        getEntryData();
 
-        oTitleEt = findViewById(R.id.merchant);
-        oDateEt = findViewById(R.id.date);
-        oTotalEt = findViewById(R.id.total);
-        oSubTotalEt = findViewById(R.id.subTotal);
-        oPaymentEt = findViewById(R.id.payment);
-        oPhotoIv = findViewById(R.id.photo);
-        tag = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
+        mTitle = findViewById(R.id.merchant);
+        mDate = findViewById(R.id.date);
+        mTotal = findViewById(R.id.total);
+        mSubTotal = findViewById(R.id.subTotal);
+        mPayment = findViewById(R.id.payment);
+        mPhoto = findViewById(R.id.photo);
+        mTag = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
 
         edit = findViewById(R.id.editText);
         edit.setOnClickListener(new View.OnClickListener() {
@@ -60,9 +57,52 @@ public class OverviewActivity extends AppCompatActivity {
 
     }
 
+    private void getEntryData() {
+        mReceiptDb = ReceiptDatabase.getInstance(getApplicationContext());
+        mOverviewList = mReceiptDb.overviewDao().getOverviews(mReceiptId);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (mOverviewList.size() == 0) { // just checking that there is an entry in the database for this receipt or if empty
+            mTitle.setText(mReceiptDb.receiptDao().getReceipt(mReceiptId).getMerchant());
+            showReceiptContents(false);
+        } else {
+            mTitle.setText(mReceiptDb.receiptDao().getReceipt(mReceiptId).getMerchant());
+            showReceiptContents(true);
+        }
+    }
+
+    private void showReceiptContents(boolean showContents) {
+        if (showContents == true) {
+            mDate.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getDate());
+            mTotal.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getTotal());
+            mSubTotal.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getSubtotal());
+            mTag.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getTag());
+            mPayment.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getPayment());
+        } else {
+            Overview overview = new Overview();
+            overview.setDate("empty");
+            overview.setTotal("empty");
+            overview.setSubtotal("empty");
+            overview.setTag("Groceries");
+            overview.setPayment("empty");
+            overview.setReceiptId(mReceiptId);
+            mReceiptDb.overviewDao().insertOverview(overview);
+            showReceiptContents(true);
+//            mDate.setText("");
+//            mTotal.setText("");
+//            mSubTotal.setText("");
+//            mTag.setText("");
+//            mPayment.setText("");
+        }
+    }
+
     private void editOverview() {
         Intent intent = new Intent(this, OverviewEditActivity.class);
         intent.putExtra(EXTRA_RECEIPT_ID, mReceiptId);
+        getEntryData();
         long overviewId = mOverviewList.get(0).getId();
         intent.putExtra(OverviewEditActivity.EXTRA_OVERVIEW_ID, overviewId);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_ENTRY);

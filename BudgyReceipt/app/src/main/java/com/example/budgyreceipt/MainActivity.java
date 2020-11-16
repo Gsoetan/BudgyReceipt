@@ -46,9 +46,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
 
         //maybe add layout manager for horizontal bars? idk yet
 
-        mReceiptAdapter = new ReceiptAdapter(getReceipts());
-        mRecyclerView.setAdapter(mReceiptAdapter);
-
+        updateView();
     }
 
     @Override
@@ -58,12 +56,17 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
             long receiptId = mReceiptdb.receiptDao().insertReceipt(receipt);
             receipt.setId(receiptId);
 
-            // TODO: add subject to recycler view
+            updateView();
             Toast.makeText(this, "Added " + receiptMerchant, Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void addReceiptClick(View view) { // creates the recycler view
+    private void updateView() {
+        mReceiptAdapter = new ReceiptAdapter(getReceipts());
+        mRecyclerView.setAdapter(mReceiptAdapter);
+    }
+
+    public void addReceiptClick(View view) { // adds a new fragment and receipt
         FragmentManager manager = getSupportFragmentManager();
         ReceiptFragment frag = new ReceiptFragment();
         frag.show(manager, "receiptFragment");
@@ -74,18 +77,21 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     private class ReceiptHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
 
         private Receipt mReceipt;
-        private TextView mText_merchant, mText_total;
+        private TextView mText_merchant, mText_total, mText_date;
 
         public ReceiptHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.recycler_view_items, parent, false));
             itemView.setOnClickListener(this);
             mText_merchant = itemView.findViewById(R.id.merchant_text);
             mText_total = itemView.findViewById(R.id.total_text);
+            mText_date = itemView.findViewById(R.id.date_text);
         }
 
         public void bind(Receipt receipt) { // make the fragment
             mReceipt = receipt;
             mText_merchant.setText(receipt.getMerchant());
+            mText_total.setText("$" + receipt.getTotal());
+            // TODO: mText_date.setText();
         }
 
         @Override
