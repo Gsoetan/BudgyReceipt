@@ -1,11 +1,23 @@
 package com.example.budgyreceipt;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -32,10 +44,19 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     private RecyclerView mRecyclerView;
 
 
+    private Button clickme;
+    private DrawerLayout draw;
+    private ActionBarDrawerToggle test;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        draw = (DrawerLayout)findViewById(R.id.drawer_layout);
+        draw.closeDrawers();
+        test = new ActionBarDrawerToggle(this, draw, R.string.Open, R.string.Close);
+        test.setDrawerIndicatorEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         mReceiptdb = ReceiptDatabase.getInstance(getApplicationContext());
 
@@ -123,6 +144,29 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
 
         @Override
         public int getItemCount() { return mReceiptList.size(); }
+      
+        draw.addDrawerListener(test);
+        test.syncState();
+
+        NavigationView nav_view = (NavigationView)findViewById(R.id.nav_view);
+        nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.nav_about){
+                    startActivity(new Intent( MainActivity.this, About.class));
+                }
+                if (id == R.id.nav_goals){
+                    startActivity(new Intent( MainActivity.this, Goals.class));
+                }
+                if (id == R.id.nav_receipt){
+                    startActivity(new Intent( MainActivity.this, OverviewActivity.class));
+                } if (id == R.id.nav_home){
+                    startActivity(new Intent( MainActivity.this, MainActivity.class));
+                }
+                return true;
+            }
+        });
     }
 
     //actionbar menu (settings)
@@ -142,13 +186,12 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         if (id == R.id.monthly){
             Toast.makeText(this,"Monthly", Toast.LENGTH_SHORT).show();
         }
-        return super.onOptionsItemSelected(item);
+
+        return test.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
-
-
 }

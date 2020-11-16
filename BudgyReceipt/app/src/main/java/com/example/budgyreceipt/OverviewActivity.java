@@ -1,22 +1,51 @@
 package com.example.budgyreceipt;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Space;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.vision.Frame;
+import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.gms.vision.text.TextRecognizer;
+import com.google.android.material.navigation.NavigationView;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageActivity;
+import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.util.List;
 
 public class OverviewActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_UPDATE_ENTRY = 1;
+  
+    private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
+    private ImageView oPhotoIv;
+    private ImageButton clickme;
 
     private ReceiptDatabase mReceiptDb;
     private long mReceiptId;
@@ -46,6 +75,7 @@ public class OverviewActivity extends AppCompatActivity {
         mPayment = findViewById(R.id.payment);
         mPhoto = findViewById(R.id.photo);
         mTag = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
+
 
         edit = findViewById(R.id.editText);
         edit.setOnClickListener(new View.OnClickListener() {
@@ -83,10 +113,10 @@ public class OverviewActivity extends AppCompatActivity {
             mPayment.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getPayment());
         } else {
             Overview overview = new Overview();
-            overview.setDate("empty");
-            overview.setTotal("empty");
-            overview.setSubtotal("empty");
-            overview.setTag("Groceries");
+            overview.setDate("01/01/0001");
+            overview.setTotal("0.00");
+            overview.setSubtotal("0.00");
+            overview.setTag("Grocery");
             overview.setPayment("empty");
             overview.setReceiptId(mReceiptId);
             mReceiptDb.overviewDao().insertOverview(overview);
