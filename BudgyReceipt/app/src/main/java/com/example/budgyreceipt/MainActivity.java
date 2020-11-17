@@ -33,6 +33,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.navigation.NavigationView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,16 +44,14 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     private ReceiptDatabase mReceiptdb;
     private ReceiptAdapter mReceiptAdapter;
     private RecyclerView mRecyclerView;
-
-
-    private Button clickme;
     private DrawerLayout draw;
     private ActionBarDrawerToggle test;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        draw = (DrawerLayout)findViewById(R.id.drawer_layout);
+        draw = findViewById(R.id.drawer_layout);
         draw.closeDrawers();
         test = new ActionBarDrawerToggle(this, draw, R.string.Open, R.string.Close);
         test.setDrawerIndicatorEnabled(true);
@@ -65,7 +65,28 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
                 new GridLayoutManager(getApplicationContext(), 1);
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        //maybe add layout manager for horizontal bars? idk yet
+        draw.addDrawerListener(test);
+        test.syncState();
+
+        NavigationView nav_view = findViewById(R.id.nav_view);
+        nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                int id = menuItem.getItemId();
+                if (id == R.id.nav_about){
+                    startActivity(new Intent( MainActivity.this, About.class));
+                }
+                if (id == R.id.nav_goals){
+                    startActivity(new Intent( MainActivity.this, Goals.class));
+                }
+                if (id == R.id.nav_receipt){
+                    startActivity(new Intent( MainActivity.this, OverviewActivity.class)); // pls remove
+                } if (id == R.id.nav_home){
+                    startActivity(new Intent( MainActivity.this, MainActivity.class));
+                }
+                return true;
+            }
+        });
 
         updateView();
     }
@@ -128,7 +149,9 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
 
         private List<Receipt> mReceiptList;
 
-        public ReceiptAdapter(List<Receipt> receipts) { mReceiptList = receipts; }
+        public ReceiptAdapter(List<Receipt> receipts) {
+            mReceiptList = receipts;
+        }
 
         @NonNull
         @Override
@@ -143,30 +166,9 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         }
 
         @Override
-        public int getItemCount() { return mReceiptList.size(); }
-      
-        draw.addDrawerListener(test);
-        test.syncState();
-
-        NavigationView nav_view = (NavigationView)findViewById(R.id.nav_view);
-        nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
-                if (id == R.id.nav_about){
-                    startActivity(new Intent( MainActivity.this, About.class));
-                }
-                if (id == R.id.nav_goals){
-                    startActivity(new Intent( MainActivity.this, Goals.class));
-                }
-                if (id == R.id.nav_receipt){
-                    startActivity(new Intent( MainActivity.this, OverviewActivity.class));
-                } if (id == R.id.nav_home){
-                    startActivity(new Intent( MainActivity.this, MainActivity.class));
-                }
-                return true;
-            }
-        });
+        public int getItemCount() {
+            return mReceiptList.size();
+        }
     }
 
     //actionbar menu (settings)

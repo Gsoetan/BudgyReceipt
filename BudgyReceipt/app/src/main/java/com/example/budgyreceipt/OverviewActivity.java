@@ -42,10 +42,6 @@ import java.util.List;
 public class OverviewActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_UPDATE_ENTRY = 1;
-  
-    private EditText oTitleEt, oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
-    private ImageView oPhotoIv;
-    private ImageButton clickme;
 
     private ReceiptDatabase mReceiptDb;
     private long mReceiptId;
