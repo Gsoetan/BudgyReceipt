@@ -24,12 +24,12 @@
             android:src="@drawable/ic_action_back" />
 
         <EditText
-            android:id="@+id/merchant"
+            android:id="@+id/Goal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_gravity="center_horizontal"
-            android:text="Title Here"
+            android:text="What is your goal?"
             android:textSize="25sp" />
 
         <ImageButton
@@ -54,7 +54,7 @@
             android:orientation="vertical">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/dateCard"
+                android:id="@+id/dateGoals"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#fff"
@@ -91,7 +91,7 @@
                             android:layout_height="wrap_content"
                             android:autoLink="all"
                             android:background="@null"
-                            android:hint="Enter date here"
+                            android:hint="Enter date range for your Goal"
                             android:padding="5dp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -118,12 +118,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:text="What is your Goal?" />
 
                         <EditText
                             android:id="@+id/total"
