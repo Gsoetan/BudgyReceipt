@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 public class About extends AppCompatActivity {
-    private Button clickme;
+    private FloatingActionButton clickme;
     private DrawerLayout draw;
     private ActionBarDrawerToggle test;
     @Override
@@ -18,7 +20,7 @@ public class About extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        clickme = (Button)findViewById(R.id.buttonHome);
+        clickme = (FloatingActionButton) findViewById(R.id.floatingActionButton);
         clickme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
