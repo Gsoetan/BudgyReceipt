@@ -1,18 +1,13 @@
 package com.example.budgyreceipt;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-
-import com.google.android.material.navigation.NavigationView;
 
 public class About extends AppCompatActivity {
     private Button clickme;
@@ -23,7 +18,7 @@ public class About extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
 
-        clickme = (Button)findViewById(R.id.button);
+        clickme = (Button)findViewById(R.id.buttonHome);
         clickme.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
