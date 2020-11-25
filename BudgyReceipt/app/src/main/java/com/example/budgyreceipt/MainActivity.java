@@ -76,12 +76,10 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
                 if (id == R.id.nav_about){
                     startActivity(new Intent( MainActivity.this, About.class));
                 }
-                if (id == R.id.nav_goals){
-                    startActivity(new Intent( MainActivity.this, Goals.class));
+                if (id == R.id.nav_goals) {
+                    startActivity(new Intent(MainActivity.this, Goals.class));
                 }
-                if (id == R.id.nav_receipt){
-                    startActivity(new Intent( MainActivity.this, OverviewActivity.class)); // pls remove
-                } if (id == R.id.nav_home){
+                 if (id == R.id.nav_home){
                     startActivity(new Intent( MainActivity.this, MainActivity.class));
                 }
                 return true;
