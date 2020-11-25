@@ -9,10 +9,6 @@
             android:icon="@drawable/ic_menu_camera"
             android:title="Home" />
         <item
-            android:id="@+id/nav_receipt"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="New Receipt" />
-        <item
             android:id="@+id/nav_goals"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Goals" />
