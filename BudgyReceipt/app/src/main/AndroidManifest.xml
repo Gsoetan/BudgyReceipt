@@ -33,6 +33,9 @@
         <activity
             android:name=".OverviewActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".Trends"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"/>
 
     </application>
 
