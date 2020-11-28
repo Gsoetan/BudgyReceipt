@@ -9,20 +9,24 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -35,8 +39,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
 
 import static com.example.budgyreceipt.MainCalculations.stringParse;
 import static com.example.budgyreceipt.MainCalculations.getArrayIndex;
@@ -51,11 +54,13 @@ public class OverviewEditActivity extends AppCompatActivity {
     private Overview mOverview;
     private Receipt mReceipt;
 
-    private EditText oDateEt, oTotalEt, oSubTotalEt, oPaymentEt;
-    private TextView oTitleEt;
+    private EditText oTotalEt, oSubTotalEt, oPaymentEt;
+    private TextView oDateEt, oTitleEt;
     private ImageView oPhotoIv;
     private Spinner tags;
     private FloatingActionButton save;
+
+    private int year, month, day; // for setting the calendar date
 
     public static final String EXTRA_RECEIPT_ID = "com.example.budgyreceipt.receipt_id";
     public static final String EXTRA_OVERVIEW_ID = "com.example.budgyreceipt.overview_id";
@@ -78,7 +83,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_overview);
 
         oTitleEt = findViewById(R.id.merchant);
-        oDateEt = findViewById(R.id.date);
+        oDateEt = (TextView) findViewById(R.id.date);
         oTotalEt = findViewById(R.id.total);
         oSubTotalEt = findViewById(R.id.subTotal);
         tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
@@ -122,6 +127,28 @@ public class OverviewEditActivity extends AppCompatActivity {
         });
 
 
+        oDateEt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar cal = Calendar.getInstance();
+                year = cal.get(Calendar.YEAR);
+                month = cal.get(Calendar.MONTH);
+                day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(OverviewEditActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int day) {
+                        month = month + 1;
+                        String date = month + "/" + day + "/" + year;
+                        oDateEt.setText(date);
+                    }
+                }, year, month, day);
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.show();
+            }
+        });
+
+
         //camera permissions
         cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
         //storage permission
@@ -131,6 +158,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tags.setAdapter(adapter);
     }
+
 
     private void saveOverview() {
         mOverview.setDate(oDateEt.getText().toString());

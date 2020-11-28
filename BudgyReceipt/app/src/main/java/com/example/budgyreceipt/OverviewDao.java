@@ -17,6 +17,15 @@ public interface OverviewDao {
     @Query("SELECT * FROM Overview WHERE receiptId = :receiptId ORDER BY id")
     public List<Overview> getOverviews(long receiptId);
 
+    @Query("SELECT total FROM Overview WHERE tag = :tag")
+    public List<String> getCategoryTotals(String tag);
+
+    @Query("SELECT date FROM Overview")
+    public List<String> getDates();
+
+    @Query("SELECT id FROM Overview WHERE date = :date")
+    public int getDateID(String date);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public long insertOverview(Overview overview);
 

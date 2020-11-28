@@ -1,28 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.jjoe64.graphview.GraphView
-        android:id="@+id/line_graph"
-        android:layout_width="362dp"
-        android:layout_height="175dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="355dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="36dp"
-        android:text="Check out your trends for the week above!"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.446"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/line_graph" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/bar_graph"
+            android:layout_width="362dp"
+            android:layout_height="175dp"
+            android:layout_marginTop="412dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="355dp"
+            android:layout_height="47dp"
+            android:layout_marginTop="12dp"
+            android:text="Check out your categorical spending for the week above!"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bar_graph" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/line_graph"
+            android:layout_width="362dp"
+            android:layout_height="175dp"
+            android:layout_marginTop="156dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="355dp"
+            android:layout_height="47dp"
+            android:layout_marginTop="12dp"
+            android:text="Check out your trends for the week above!"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/line_graph" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.045"
+            tools:layout_editor_absoluteX="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="75dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/dateFrom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_weight=".5"
+                    android:gravity="center_horizontal"
+                    android:hint="Past/Current date" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:text="To" />
+
+                <TextView
+                    android:id="@+id/dateTo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:hint="Future date" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/calcDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="37dp"
+                android:layout_marginBottom="15dp"
+                android:text="Calculate" />
+
+            <TextView
+                android:id="@+id/test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="31dp"
+                android:text="test test test" />
+        </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

@@ -42,6 +42,17 @@ public class Overview {
     private String mPayment;
 
     //photo bitmap to come later
+    public Overview() {}
+
+    public Overview(long mId, long mReceiptId, String mDate, String mTotal, String mSubtotal, String mTag, String mPayment){
+        this.mId = mId;
+        this.mReceiptId = mReceiptId;
+        this.mDate = mDate;
+        this.mTotal = mTotal;
+        this.mSubtotal = mSubtotal;
+        this.mTag = mTag;
+        this.mPayment = mPayment;
+    }
 
     public long getId() { return mId; }
 

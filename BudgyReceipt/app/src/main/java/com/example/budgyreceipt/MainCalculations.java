@@ -1,6 +1,13 @@
 package com.example.budgyreceipt;
 
+import android.content.Intent;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class MainCalculations {
     private ArrayList<String> str = new ArrayList<String>();
@@ -34,8 +41,17 @@ public class MainCalculations {
                 if (item.matches("(\\d)+\\.\\d{2}")){ // matches for typical price point ex. 500.43
                     prices.add(item);
                 }
-                if (item.matches("(\\d{1,2})/(\\d{1,2})/(\\d{2,4})")){
+                if (item.matches("(\\d{1,2})/(\\d{1,2})/(\\d{4})")){ // need to add way of formatting date format of mm/dd/yy --> mm/dd/yyyy
                     date = item;
+                } else if (item.matches("(\\d{1,2})/(\\d{1,2})/(\\d{2})")){
+                    String[] date_arr = item.split("/");
+                    int year_val = Integer.parseInt(date_arr[2]);
+                    if (year_val > 20 && year_val <= 99){ //check if the year is smaller than 99 for 1999 but bigger than 20 for 2020
+                        date_arr[2] = "19" + date_arr[2];
+                    } else {
+                        date_arr[2] = "20" + date_arr[2];
+                    }
+                    date = date_arr[0] + "/" + date_arr[1] + "/" + date_arr[2];
                 }
             }
         }
@@ -103,8 +119,16 @@ public class MainCalculations {
         return returns;
     }
 
-    public void monthlyCalc () { // calculate all the numbers the
+    public static String dateCalc(String pastDate, String futureDate) throws ParseException { // calculate all the numbers the
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        Date pDate = sdf.parse(pastDate);
+        Date fDate = sdf.parse(futureDate);
 
+        long diffInMill = Math.abs(fDate.getTime() - pDate.getTime());
+        long diffInDays = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
+        String diff_to_string = Integer.toString((int) diffInDays);
+
+        return diff_to_string;
     }
 
 }

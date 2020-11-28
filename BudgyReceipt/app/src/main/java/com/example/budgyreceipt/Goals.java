@@ -16,20 +16,12 @@ import com.google.android.material.navigation.NavigationView;
 
 public class Goals extends AppCompatActivity {
 
-    private ImageButton clickme;
     private DrawerLayout draw;
     private ActionBarDrawerToggle test;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goals);
-        clickme = (ImageButton)findViewById(R.id.HButton);
-        clickme.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(Goals.this, MainActivity.class));
-            }
-        });
     }
 
     // save button will need to implemented
