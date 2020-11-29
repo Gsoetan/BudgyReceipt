@@ -43,7 +43,7 @@ import java.util.Calendar;
 
 import static com.example.budgyreceipt.MainCalculations.stringParse;
 import static com.example.budgyreceipt.MainCalculations.getArrayIndex;
-
+// If you can get to it, add something so that if not all information was filled - a prompt appears letting the user know this and that they will have to supplement the missing info
 public class OverviewEditActivity extends AppCompatActivity {
 
     private final int REQUEST_CODE_NEW_ENTRY = 0;
@@ -105,7 +105,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         } else {
             mOverview = mReceiptDb.overviewDao().getOverview(mOverviewId);
             mReceipt = mReceiptDb.receiptDao().getReceipt(mOverviewId);
-            oTitleEt.setText(mReceiptDb.receiptDao().getReceipt(mOverviewId).getMerchant());
+            oTitleEt.setText(mReceipt.getMerchant());
             oDateEt.setText(mOverview.getDate());
             oTotalEt.setText(mOverview.getTotal());
             oSubTotalEt.setText(mOverview.getSubtotal());

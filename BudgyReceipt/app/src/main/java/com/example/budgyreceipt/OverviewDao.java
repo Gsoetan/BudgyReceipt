@@ -18,13 +18,19 @@ public interface OverviewDao {
     public List<Overview> getOverviews(long receiptId);
 
     @Query("SELECT total FROM Overview WHERE tag = :tag")
-    public List<String> getCategoryTotals(String tag);
+    public List<String> getCategoryTotals(String tag); //used to get the totals of specified tags
 
     @Query("SELECT date FROM Overview")
-    public List<String> getDates();
+    public List<String> getDates(); // used to just get all dates
+
+    @Query("SELECT total FROM Overview WHERE id = :id")
+    public String getTotal(long id); // used to get specified total by their id
+
+    @Query("SELECT date FROM Overview WHERE id = :id")
+    public String getDate(long id); // used to get specified date by their id
 
     @Query("SELECT id FROM Overview WHERE date = :date")
-    public int getDateID(String date);
+    public List<Integer> getDateID(String date); // used for matching dates. This is the first step to using the query above
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public long insertOverview(Overview overview);

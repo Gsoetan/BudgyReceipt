@@ -1,13 +1,11 @@
 package com.example.budgyreceipt;
 
-import android.content.Intent;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 public class MainCalculations {
     private ArrayList<String> str = new ArrayList<String>();
@@ -119,16 +117,73 @@ public class MainCalculations {
         return returns;
     }
 
-    public static String dateCalc(String pastDate, String futureDate) throws ParseException { // calculate all the numbers the
+    public static List<String> dateCalc(String pastDate, String futureDate, List<String> dates) throws ParseException { // calculate all the numbers the
+        List<Date> datesFormatted = new ArrayList<>();
+        List<Integer> dateIndexes = new ArrayList<>();
+        List<String> desiredDates = new ArrayList<>(); // final array to be sent back with the dates in specified range
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+
         Date pDate = sdf.parse(pastDate);
         Date fDate = sdf.parse(futureDate);
 
-        long diffInMill = Math.abs(fDate.getTime() - pDate.getTime());
-        long diffInDays = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
-        String diff_to_string = Integer.toString((int) diffInDays);
+        for (String date:dates) { // format all the dates to be checked later
+            Date dFormatted = sdf.parse(date);
+            datesFormatted.add(dFormatted);
+        }
 
-        return diff_to_string;
+        for (int i = 0; i < datesFormatted.size(); i++){ // get the desired dates between the start and end date
+            Date date = datesFormatted.get(i);
+            if (date.getTime() > pDate.getTime() && date.getTime() < fDate.getTime()){
+                desiredDates.add(dates.get(i));
+            }
+        }
+
+        // you could make it so that you compare each date based off if it's mill time is in between the start and end date and push it to a list/array and then pull the totals and tags
+//        long diffInMill = Math.abs(fDate.getTime() - pDate.getTime());
+//        long diffInDays = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
+//        String diff_to_string = Integer.toString((int) diffInDays);
+
+        return desiredDates;
+    }
+
+    public static List<Integer> getUniqueIds(List<Integer> ids) {
+        List<Integer> ids_temp = ids;
+        for (int i = 0; i < ids_temp.size(); i++){
+            for (int j = i+1; j < ids_temp.size(); j++){
+                if (ids_temp.get(i) == ids_temp.get(j)){ ids_temp.remove(j); }
+            }
+        }
+        return ids_temp;
+    }
+
+    public static List<List<String>> getDatesSorted(List<List<String>> datesNtotals) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        List<List<String>> temp = datesNtotals;
+        for (int i = 0; i < temp.size(); i++){
+            List<String> i_inner_temp = temp.get(i); // temp array for array at i pos
+            for (int j = i+1; j < temp.size(); j++){
+                List<String> j_inner_temp = temp.get(j); // temp array for array at j pos
+                Date i_temp_date = sdf.parse(i_inner_temp.get(0)); // grab the formatted date for each of the dates in the i and j pos
+                Date j_temp_date = sdf.parse(j_inner_temp.get(0));
+                if (i_temp_date.getTime() > j_temp_date.getTime()){ // compare the two to see which came before the other
+                    List<String> swapper = temp.get(i);
+                    temp.set(i, temp.get(j));
+                    temp.set(j, swapper);
+                }
+                if (i_temp_date.getTime() == j_temp_date.getTime()){
+                    //  merge the two equal date's totals and add it to the i tuple
+                    Double i_total = Double.parseDouble(i_inner_temp.get(1));
+                    Double j_total = Double.parseDouble(j_inner_temp.get(1));
+                    Double combined_total = i_total + j_total;
+                    String new_total = Double.toString(combined_total);
+                    i_inner_temp.set(1, new_total);
+                    temp.set(i, i_inner_temp);
+                    temp.remove(j);
+                    j--; // make sure to decrement to not miss the next value that took the removed item's pos
+                }
+            }
+        }
+        return temp;
     }
 
 }
