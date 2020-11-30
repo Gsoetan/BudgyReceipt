@@ -1,41 +1,28 @@
 package com.example.budgyreceipt;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // This is also the receipt activity that will store all of the user created receipt entities
@@ -44,20 +31,26 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     private ReceiptDatabase mReceiptdb;
     private ReceiptAdapter mReceiptAdapter;
     private RecyclerView mRecyclerView;
-    private DrawerLayout draw;
-    private ActionBarDrawerToggle test;
+    private Receipt selectedReceipt;
+    private int selectedReceiptPos = RecyclerView.NO_POSITION;
+    private DrawerLayout drawer;
+    private ActionMode action = null;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        draw = findViewById(R.id.drawer_layout);
-        draw.closeDrawers();
-        test = new ActionBarDrawerToggle(this, draw, R.string.Open, R.string.Close);
-        test.setDrawerIndicatorEnabled(true);
+
+        // setup for the drawer
+        drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawers();
+        drawerToggle = new ActionBarDrawerToggle(this, drawer, R.string.Open, R.string.Close);
+        drawerToggle.setDrawerIndicatorEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        // grab the database (singleton)
         mReceiptdb = ReceiptDatabase.getInstance(getApplicationContext());
 
         mRecyclerView = findViewById(R.id.receiptRecyclerView);
@@ -65,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
                 new GridLayoutManager(getApplicationContext(), 1);
         mRecyclerView.setLayoutManager(gridLayoutManager);
 
-        draw.addDrawerListener(test);
-        test.syncState();
+        drawer.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
 
         NavigationView nav_view = findViewById(R.id.nav_view);
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -88,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
                 return true;
             }
         });
-
-        updateView();
+        mReceiptAdapter = new ReceiptAdapter(getReceipts(false));
+        mRecyclerView.setAdapter(mReceiptAdapter);
     }
 
     @Override
@@ -98,15 +91,9 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
             Receipt receipt = new Receipt(receiptMerchant);
             long receiptId = mReceiptdb.receiptDao().insertReceipt(receipt);
             receipt.setId(receiptId);
-
-            updateView();
+            mReceiptAdapter.addReceipt(receipt);
             Toast.makeText(this, "Added " + receiptMerchant, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void updateView() {
-        mReceiptAdapter = new ReceiptAdapter(getReceipts());
-        mRecyclerView.setAdapter(mReceiptAdapter);
     }
 
     public void addReceiptClick(View view) { // adds a new fragment and receipt
@@ -115,9 +102,16 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         frag.show(manager, "receiptFragment");
     }
 
-    private List<Receipt> getReceipts() { return mReceiptdb.receiptDao().getReceiptsNew(); } // load the receipts into the activity based off newest additions
+    private List<Receipt> getReceipts(Boolean isAsc) { // load the receipts into the activity based off newest additions
+        if (isAsc){
+            return mReceiptdb.receiptDao().getReceiptsOld();
+        } else if (!isAsc){
+            return mReceiptdb.receiptDao().getReceiptsNew();
+        }
+        return mReceiptdb.receiptDao().getReceiptsNew();
+    }
 
-    private class ReceiptHolder extends RecyclerView.ViewHolder implements  View.OnClickListener {
+    private class ReceiptHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnLongClickListener {
 
         private Receipt mReceipt;
         private TextView mText_merchant, mText_total, mText_date;
@@ -125,16 +119,19 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         public ReceiptHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.recycler_view_items, parent, false));
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
             mText_merchant = itemView.findViewById(R.id.merchant_text);
             mText_total = itemView.findViewById(R.id.total_text);
             mText_date = itemView.findViewById(R.id.date_text);
         }
 
-        public void bind(Receipt receipt) { // make the fragment
+        public void bind(Receipt receipt, int pos) { // make the fragment
             mReceipt = receipt;
             mText_merchant.setText(receipt.getMerchant());
             mText_total.setText("$" + receipt.getTotal());
-            // TODO: mText_date.setText();
+
+            if (selectedReceiptPos == pos){ mText_merchant.setBackgroundColor(Color.RED); }
+            else { mText_merchant.setBackgroundColor(Color.WHITE); }
         }
 
         @Override
@@ -144,7 +141,47 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
             intent.putExtra(OverviewActivity.EXTRA_RECEIPT_ID, mReceipt.getId());
             startActivity(intent);
         }
+
+        @Override
+        public boolean onLongClick(View v){
+            if (action != null){ return false; }
+            selectedReceipt = mReceipt;
+            selectedReceiptPos = getAdapterPosition();
+            mReceiptAdapter.notifyItemChanged(selectedReceiptPos);
+            action = MainActivity.this.startActionMode(actionCallback);
+            return true;
+        }
     }
+
+    private ActionMode.Callback actionCallback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.hold_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) { return false; }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            if (item.getItemId() == R.id.delete){
+                mReceiptdb.receiptDao().deleteReceipt(selectedReceipt);
+                mReceiptAdapter.removeReceipt(selectedReceipt);
+                mode.finish();
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            action = null;
+            mReceiptAdapter.notifyItemChanged(selectedReceiptPos);
+            selectedReceiptPos = RecyclerView.NO_POSITION;
+        }
+    };
 
     private class ReceiptAdapter extends RecyclerView.Adapter<ReceiptHolder> {
 
@@ -163,19 +200,34 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
 
         @Override
         public void onBindViewHolder(ReceiptHolder holder, int position) {
-            holder.bind(mReceiptList.get(position));
+            holder.bind(mReceiptList.get(position), position);
         }
 
         @Override
         public int getItemCount() {
             return mReceiptList.size();
         }
+
+        public void addReceipt(Receipt receipt) {
+            mReceiptList.add(0, receipt);
+            notifyItemInserted(0);
+            mRecyclerView.scrollToPosition(0);
+        }
+
+        public void removeReceipt(Receipt receipt) {
+            int receipt_position = mReceiptList.indexOf(receipt);
+            if (receipt_position >= 0){
+                mReceiptList.remove(receipt_position);
+                notifyItemRemoved(receipt_position);
+            }
+        }
     }
 
     //actionbar menu (settings)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -183,14 +235,18 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.weekly){
-            Toast.makeText(this,"Weekly", Toast.LENGTH_SHORT).show();
+        if (id == R.id.ascending){
+            Toast.makeText(this,"Ascending", Toast.LENGTH_SHORT).show();
+            mReceiptAdapter = new ReceiptAdapter(getReceipts(true));
+            mRecyclerView.setAdapter(mReceiptAdapter);
         }
-        if (id == R.id.monthly){
-            Toast.makeText(this,"Monthly", Toast.LENGTH_SHORT).show();
+        if (id == R.id.descending){
+            Toast.makeText(this,"Descending", Toast.LENGTH_SHORT).show();
+            mReceiptAdapter = new ReceiptAdapter(getReceipts(false));
+            mRecyclerView.setAdapter(mReceiptAdapter);
         }
 
-        return test.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
