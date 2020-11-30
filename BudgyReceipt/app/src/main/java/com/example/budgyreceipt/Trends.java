@@ -5,26 +5,38 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
+import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import static com.example.budgyreceipt.MainCalculations.dateCalc;
 import static com.example.budgyreceipt.MainCalculations.getUniqueIds;
 import static com.example.budgyreceipt.MainCalculations.getDatesSorted;
+import static com.example.budgyreceipt.MainCalculations.getTagsSorted;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,11 +46,12 @@ public class Trends extends AppCompatActivity {
 
     private TextView fromDate, toDate, test;
     private Button dateCalculatorBtn;
-    private List<List<String>> dates_w_totals;
+    private List<List<String>> dates_w_totals, tags_w_totals;
     private String dayDiff;
     private int year, month, day;
 
-    private GraphView lineGraph, barGraph;
+    private GraphView lineGraph;
+    private BarChart barGraph;
 
     private ReceiptDatabase mReceiptDb;
 
@@ -53,22 +66,10 @@ public class Trends extends AppCompatActivity {
 
         dateCalculatorBtn = findViewById(R.id.calcDate);
         lineGraph = (GraphView) findViewById(R.id.line_graph);
-        barGraph = (GraphView) findViewById(R.id.bar_graph);
+        barGraph = (BarChart) findViewById(R.id.bar_graph);
 
-        fromDate.setText("11/28/2013"); // remove
+        fromDate.setText("09/28/1993"); // remove
         toDate.setText("11/28/2020"); // remove
-
-//            LineGraphSeries<DataPoint> lineSeries = new LineGraphSeries<>(new DataPoint[] {
-//                    new DataPoint(0, 1),
-//                    new DataPoint(1, 5),
-//                    new DataPoint(2, 3),
-//                    new DataPoint(3, 2),
-//                    new DataPoint(4, 6)
-//            });
-//            lineGraph.addSeries(lineSeries);
-//            lineSeries.setColor(Color.MAGENTA);
-//            lineSeries.setTitle("Example Trend Line");
-//            lineSeries.setThickness(8);
 
         mReceiptDb = ReceiptDatabase.getInstance(getApplicationContext());
 
@@ -76,16 +77,11 @@ public class Trends extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    calcDates();
                     setLineGraph();
-                    //initGraph(lineGraph);
+                    setBarGraph();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
-                dayDiff = "10";
-
-                test.setText(dayDiff);
             }
         });
 
@@ -132,42 +128,77 @@ public class Trends extends AppCompatActivity {
         });
 
     }
+    private void tester() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
+        cal.clear(Calendar.MINUTE);
+        cal.clear(Calendar.SECOND);
+        cal.clear(Calendar.MILLISECOND);
 
-    public void initGraph(GraphView graph) {
-        // generate Dates
-        Calendar calendar = Calendar.getInstance();
-        Date d1 = calendar.getTime();
-        calendar.add(Calendar.DATE, 1);
-        Date d2 = calendar.getTime();
-        calendar.add(Calendar.DATE, 1);
-        Date d3 = calendar.getTime();
+        // get start of this week in milliseconds
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        test.setText("Start of this week:       " + cal.getTime());
+        //test.setText("... in milliseconds:      " + cal.getTimeInMillis());
 
-        // you can directly pass Date objects to DataPoint-Constructor
-        // this will convert the Date to double via Date#getTime()
-        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
-                new DataPoint(d1, 1),
-                new DataPoint(d2, 5),
-                new DataPoint(d3, 3)
-        });
-        graph.addSeries(series);
+        // start of the next week
+//        cal.add(Calendar.WEEK_OF_YEAR, 1);
+//        System.out.println("Start of the next week:   " + cal.getTime());
+//        System.out.println("... in milliseconds:      " + cal.getTimeInMillis());
+    }
 
-        // set date label formatter
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(graph.getContext()));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(4);
+    private void setBarGraph() throws ParseException {
+        calcDates(false);
+        final List<String> res_tags = Arrays.asList(getResources().getStringArray(R.array.tags));
 
-        // set manual x bounds to have nice steps
-        graph.getViewport().setMinX(d1.getTime());
-        graph.getViewport().setMaxX(d3.getTime());
-        graph.getViewport().setXAxisBoundsManual(true);
+        barGraph.setDrawBarShadow(false);
+        barGraph.setDrawValueAboveBar(true);
+        barGraph.setDrawGridBackground(true);
+        Description description = new Description();
+        description.setText("");
+        barGraph.setDescription(description);
 
-        // as we use dates as labels, the human rounding to nice readable numbers
-        // is not necessary
-        graph.getGridLabelRenderer().setHumanRounding(false);
+        List<BarEntry> barEntries = new ArrayList<>();
+        for (int i = 0; i < tags_w_totals.size(); i++) {
+            List<String> temp = tags_w_totals.get(i);
+            int temp_index = res_tags.indexOf(temp.get(0));
+            barEntries.add(new BarEntry(temp_index, (float) Double.parseDouble(temp.get(1))));
+        }
+
+        BarDataSet barDataSet = new BarDataSet(barEntries, "Spending Categories");
+        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+
+        BarData data = new BarData(barDataSet);
+        data.setBarWidth(0.6f);
+
+        barGraph.setData(data);
+
+        XAxis xAxis = barGraph.getXAxis();
+        xAxis.setValueFormatter(new XAxisFormatter(res_tags));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1);
+        xAxis.setCenterAxisLabels(false);
+
+        barGraph.invalidate();
+
+    }
+
+    public class XAxisFormatter extends ValueFormatter {
+        private List<String> xValues;
+
+        public XAxisFormatter(List<String> values){
+            this.xValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            return xValues.get((int) value);
+        }
     }
 
     private void setLineGraph() throws ParseException {
+        calcDates(true);
         final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-        final SimpleDateFormat sdf2 = new SimpleDateFormat("MM/yyyy", Locale.ENGLISH);
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("M/yy", Locale.ENGLISH);
 
         DataPoint[] dataPoints = new DataPoint[dates_w_totals.size()];
         for (int i = 0; i < dates_w_totals.size(); i++) {
@@ -178,10 +209,9 @@ public class Trends extends AppCompatActivity {
         }
 
         LineGraphSeries<DataPoint> lineSeries;
-        lineSeries = new LineGraphSeries<>(dataPoints); // error starts here. For some reason the dates are repeating and aren't in order
+        lineSeries = new LineGraphSeries<>(dataPoints);
 
         lineGraph.addSeries(lineSeries);
-//        lineGraph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(lineGraph.getContext()));
         lineGraph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter(){
             @Override
             public String formatLabel(double value, boolean isValueX) {
@@ -192,26 +222,24 @@ public class Trends extends AppCompatActivity {
                 }
             }
         });
-        lineGraph.getGridLabelRenderer().setNumHorizontalLabels(4);
-        lineGraph.getGridLabelRenderer().setNumVerticalLabels(4);
+        lineGraph.getGridLabelRenderer().setNumHorizontalLabels(8);
+        lineGraph.getGridLabelRenderer().setNumVerticalLabels(8);
 
-//        List<String> firstIndex = dates_w_totals.get(0);
-//        Date min = sdf.parse(firstIndex.get(0));
-//        List<String> lastIndex = dates_w_totals.get(dates_w_totals.size()-1);
-//        Date max = sdf.parse(lastIndex.get(0));
-//
-//        lineGraph.getViewport().setMinX(min.getTime());
-//        lineGraph.getViewport().setMaxX(max.getTime());
-//        lineGraph.getViewport().setXAxisBoundsManual(true);
-        //lineGraph.getGridLabelRenderer().setHumanRounding(false);
-//
-//        lineSeries.setColor(Color.MAGENTA);
-//        lineSeries.setTitle("Example Trend Line");
-//        lineSeries.setThickness(8);
+        List<String> firstIndex = dates_w_totals.get(0);
+        Date min = sdf.parse(firstIndex.get(0));
+        List<String> lastIndex = dates_w_totals.get(dates_w_totals.size()-1);
+        Date max = sdf.parse(lastIndex.get(0));
+
+        lineGraph.getViewport().setMinX(min.getTime());
+        lineGraph.getViewport().setMaxX(max.getTime());
+        lineGraph.getViewport().setXAxisBoundsManual(true);
+
+        lineSeries.setColor(Color.MAGENTA);
+        lineSeries.setTitle("Example Trend Line");
+        lineSeries.setThickness(8);
     }
 
-    private void calcDates() throws ParseException { // this will return a list of dates from the database
-//        ContentValues dates_w_totals = new ContentValues();
+    private void calcDates(Boolean isLine) throws ParseException { // this will return a list of dates from the database
         String startDate = fromDate.getText().toString();
         String endDate = toDate.getText().toString();
 
@@ -223,31 +251,24 @@ public class Trends extends AppCompatActivity {
         }
         overviewIds = getUniqueIds(overviewIds); // will be used to get the totals now
 
-        List<Double> totals = new ArrayList<>();
+        // List<Double> totals = new ArrayList<>(); // can be removed
         dates_w_totals = new ArrayList<>(); // nested list to hold totals with their respective dates
+        tags_w_totals = new ArrayList<>(); // nested list to hold all tags with their respective totals and dates
         for (int id:overviewIds) {
             List<String> temp = new ArrayList<>();
-            totals.add(Double.parseDouble(mReceiptDb.overviewDao().getTotal((long) id))); // grab the double value of the total at the specified id
-            temp.add(mReceiptDb.overviewDao().getDate((long) id));
-            temp.add(mReceiptDb.overviewDao().getTotal((long) id));
-            dates_w_totals.add(temp);
+            if (isLine) {
+                temp.add(mReceiptDb.overviewDao().getDate((long) id));
+                temp.add(mReceiptDb.overviewDao().getTotal((long) id));
+                dates_w_totals.add(temp);
+            } else {
+                temp.add(mReceiptDb.overviewDao().getTag((long) id));
+                temp.add(mReceiptDb.overviewDao().getTotal((long) id));
+                tags_w_totals.add(temp);
+            }
         }
 
-        dates_w_totals = getDatesSorted(dates_w_totals); // gets all the dates with their totals and sorts them based off date (also combine any common date's totals)
-
-
-        /*So this is what needs to happen next:
-        * 1. We need to take the dates in period and
-        * run it in a for loop so that we can grab the
-        * indexes of all the overviews we want to access
-        *
-        * 2. We need to take those indexes and then grab
-        * the totals to calculate
-        *
-        * 3. Need to figure how to make it so the graph's
-        * x-axis is the dates and the y-axis is the amounts
-        *
-        * This will solve the first graph's problem*/
+        if (isLine) { dates_w_totals = getDatesSorted(dates_w_totals); } // gets all the dates with their totals and sorts them based off date (also combine any common date's totals)
+        else { tags_w_totals = getTagsSorted(tags_w_totals); }
     }
 }
 

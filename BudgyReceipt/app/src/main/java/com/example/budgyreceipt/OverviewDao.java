@@ -29,6 +29,9 @@ public interface OverviewDao {
     @Query("SELECT date FROM Overview WHERE id = :id")
     public String getDate(long id); // used to get specified date by their id
 
+    @Query("SELECT tag FROM Overview WHERE id = :id")
+    public String getTag(long id); // used to get specified date by their id
+
     @Query("SELECT id FROM Overview WHERE date = :date")
     public List<Integer> getDateID(String date); // used for matching dates. This is the first step to using the query above
 

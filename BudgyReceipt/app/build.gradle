@@ -24,6 +24,10 @@ android {
     }
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -39,7 +43,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    // Graphing Library
+    // Graphing Libraries
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.jjoe64:graphview:4.2.2'
     //image crop library
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'

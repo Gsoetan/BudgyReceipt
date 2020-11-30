@@ -119,7 +119,6 @@ public class MainCalculations {
 
     public static List<String> dateCalc(String pastDate, String futureDate, List<String> dates) throws ParseException { // calculate all the numbers the
         List<Date> datesFormatted = new ArrayList<>();
-        List<Integer> dateIndexes = new ArrayList<>();
         List<String> desiredDates = new ArrayList<>(); // final array to be sent back with the dates in specified range
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 
@@ -169,6 +168,7 @@ public class MainCalculations {
                     List<String> swapper = temp.get(i);
                     temp.set(i, temp.get(j));
                     temp.set(j, swapper);
+                    i_inner_temp = temp.get(i);
                 }
                 if (i_temp_date.getTime() == j_temp_date.getTime()){
                     //  merge the two equal date's totals and add it to the i tuple
@@ -183,6 +183,32 @@ public class MainCalculations {
                 }
             }
         }
+        return temp;
+    }
+    /*This method will be used to add all similar tags and then return the resulting list with only one
+    * occurrence of each type of tag available */
+    public static List<List<String>> getTagsSorted(List<List<String>> dtt) {
+        List<List<String>> temp = dtt;
+
+        for (int i = 0; i < temp.size(); i++) {
+            List<String> i_inner_temp = temp.get(i); // temp array for array at i pos
+            for (int j = i + 1; j < temp.size(); j++) {
+                List<String> j_inner_temp = temp.get(j);
+                String i_temp_tag = i_inner_temp.get(0);
+                String j_temp_tag = j_inner_temp.get(0);
+                if (i_temp_tag.equals(j_temp_tag)){
+                    Double i_total = Double.parseDouble(i_inner_temp.get(1));
+                    Double j_total = Double.parseDouble(j_inner_temp.get(1));
+                    Double combined_total = i_total + j_total;
+                    String new_total = Double.toString(combined_total);
+                    i_inner_temp.set(1, new_total);
+                    temp.set(i, i_inner_temp);
+                    temp.remove(j);
+                    j--; // make sure to decrement to not miss the next value that took the removed item's pos
+                }
+            }
+        }
+
         return temp;
     }
 
