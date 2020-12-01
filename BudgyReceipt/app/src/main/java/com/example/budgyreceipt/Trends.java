@@ -12,15 +12,21 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.utils.Utils;
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.StaticLabelsFormatter;
@@ -32,6 +38,8 @@ import static com.example.budgyreceipt.MainCalculations.dateCalc;
 import static com.example.budgyreceipt.MainCalculations.getUniqueIds;
 import static com.example.budgyreceipt.MainCalculations.getDatesSorted;
 import static com.example.budgyreceipt.MainCalculations.getTagsSorted;
+import static com.example.budgyreceipt.MainCalculations.getSortedDates;
+import static com.example.budgyreceipt.MainCalculations.getDateFormatted;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,10 +55,10 @@ public class Trends extends AppCompatActivity {
     private TextView fromDate, toDate, test;
     private Button dateCalculatorBtn;
     private List<List<String>> dates_w_totals, tags_w_totals;
-    private String dayDiff;
+    private List<String> dates_in_order;
     private int year, month, day;
 
-    private GraphView lineGraph;
+    private LineChart lineGraph;
     private BarChart barGraph;
 
     private ReceiptDatabase mReceiptDb;
@@ -65,11 +73,8 @@ public class Trends extends AppCompatActivity {
         test = findViewById(R.id.test); // can remove later
 
         dateCalculatorBtn = findViewById(R.id.calcDate);
-        lineGraph = (GraphView) findViewById(R.id.line_graph);
+        lineGraph = (LineChart) findViewById(R.id.line_graph);
         barGraph = (BarChart) findViewById(R.id.bar_graph);
-
-        fromDate.setText("09/28/1993"); // remove
-        toDate.setText("11/28/2020"); // remove
 
         mReceiptDb = ReceiptDatabase.getInstance(getApplicationContext());
 
@@ -128,23 +133,6 @@ public class Trends extends AppCompatActivity {
         });
 
     }
-    private void tester() {
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
-        cal.clear(Calendar.MINUTE);
-        cal.clear(Calendar.SECOND);
-        cal.clear(Calendar.MILLISECOND);
-
-        // get start of this week in milliseconds
-        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-        test.setText("Start of this week:       " + cal.getTime());
-        //test.setText("... in milliseconds:      " + cal.getTimeInMillis());
-
-        // start of the next week
-//        cal.add(Calendar.WEEK_OF_YEAR, 1);
-//        System.out.println("Start of the next week:   " + cal.getTime());
-//        System.out.println("... in milliseconds:      " + cal.getTimeInMillis());
-    }
 
     private void setBarGraph() throws ParseException {
         calcDates(false);
@@ -191,52 +179,55 @@ public class Trends extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value) {
-            return xValues.get((int) value);
+            return xValues.get((int) value); // where the error stems from
+        }
+    }
+
+    public class XAxisFormatterLine extends ValueFormatter {
+        private List<String> xValues;
+
+        public XAxisFormatterLine(List<String> values){
+            this.xValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            Date date = new Date((long) value);
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/yy", Locale.ENGLISH);
+            return sdf.format(date);
         }
     }
 
     private void setLineGraph() throws ParseException {
         calcDates(true);
         final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-        final SimpleDateFormat sdf2 = new SimpleDateFormat("M/yy", Locale.ENGLISH);
 
-        DataPoint[] dataPoints = new DataPoint[dates_w_totals.size()];
+        lineGraph.setTouchEnabled(true);
+        lineGraph.setPinchZoom(true);
+
+        XAxis xAxis = lineGraph.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setLabelRotationAngle(315f);
+        xAxis.setGranularity(1);
+
+        Description description = new Description();
+        description.setText("Months & Years");
+        lineGraph.setDescription(description);
+        xAxis.setValueFormatter(new XAxisFormatterLine(dates_in_order));
+
+        List<Entry> lineEntries = new ArrayList<>();
         for (int i = 0; i < dates_w_totals.size(); i++) {
             List<String> temp = dates_w_totals.get(i);
             Date date = sdf.parse(temp.get(0));
-            DataPoint point = new DataPoint(date.getTime(), Double.parseDouble(temp.get(1)));
-            dataPoints[i] = point;
+            lineEntries.add(new BarEntry(date.getTime(), (float) Double.parseDouble(temp.get(1))));
         }
 
-        LineGraphSeries<DataPoint> lineSeries;
-        lineSeries = new LineGraphSeries<>(dataPoints);
+        LineDataSet lineDataSet = new LineDataSet(lineEntries, "Spending in period");
+        lineDataSet.setLineWidth(4f);
+        LineData lineData = new LineData(lineDataSet);
+        lineGraph.setData(lineData);
 
-        lineGraph.addSeries(lineSeries);
-        lineGraph.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter(){
-            @Override
-            public String formatLabel(double value, boolean isValueX) {
-                if (isValueX){
-                    return sdf2.format(new Date((long)value));
-                } else {
-                    return super.formatLabel(value, false);
-                }
-            }
-        });
-        lineGraph.getGridLabelRenderer().setNumHorizontalLabels(8);
-        lineGraph.getGridLabelRenderer().setNumVerticalLabels(8);
-
-        List<String> firstIndex = dates_w_totals.get(0);
-        Date min = sdf.parse(firstIndex.get(0));
-        List<String> lastIndex = dates_w_totals.get(dates_w_totals.size()-1);
-        Date max = sdf.parse(lastIndex.get(0));
-
-        lineGraph.getViewport().setMinX(min.getTime());
-        lineGraph.getViewport().setMaxX(max.getTime());
-        lineGraph.getViewport().setXAxisBoundsManual(true);
-
-        lineSeries.setColor(Color.MAGENTA);
-        lineSeries.setTitle("Example Trend Line");
-        lineSeries.setThickness(8);
+        lineGraph.invalidate();
     }
 
     private void calcDates(Boolean isLine) throws ParseException { // this will return a list of dates from the database
@@ -251,12 +242,13 @@ public class Trends extends AppCompatActivity {
         }
         overviewIds = getUniqueIds(overviewIds); // will be used to get the totals now
 
-        // List<Double> totals = new ArrayList<>(); // can be removed
         dates_w_totals = new ArrayList<>(); // nested list to hold totals with their respective dates
         tags_w_totals = new ArrayList<>(); // nested list to hold all tags with their respective totals and dates
+        dates_in_order = new ArrayList<>();
         for (int id:overviewIds) {
             List<String> temp = new ArrayList<>();
             if (isLine) {
+                dates_in_order.add(mReceiptDb.overviewDao().getDate((long) id));
                 temp.add(mReceiptDb.overviewDao().getDate((long) id));
                 temp.add(mReceiptDb.overviewDao().getTotal((long) id));
                 dates_w_totals.add(temp);
@@ -267,7 +259,10 @@ public class Trends extends AppCompatActivity {
             }
         }
 
-        if (isLine) { dates_w_totals = getDatesSorted(dates_w_totals); } // gets all the dates with their totals and sorts them based off date (also combine any common date's totals)
+        if (isLine) { // gets all the dates with their totals and sorts them based off date (also combine any common date's totals)
+            dates_w_totals = getDatesSorted(dates_w_totals);
+            dates_in_order = getSortedDates(dates_in_order);
+        }
         else { tags_w_totals = getTagsSorted(tags_w_totals); }
     }
 }

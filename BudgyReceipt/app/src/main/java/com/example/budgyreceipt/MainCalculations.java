@@ -212,6 +212,32 @@ public class MainCalculations {
         return temp;
     }
 
+    public static List<String> getSortedDates(List<String> dates) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        for (int i = 0; i < dates.size(); i++) {
+            for (int j = i + 1; j < dates.size(); j++) {
+                Date i_temp_date = sdf.parse(dates.get(i)); // grab the formatted date for each of the dates in the i and j pos
+                Date j_temp_date = sdf.parse(dates.get(j));
+                if (i_temp_date.getTime() > j_temp_date.getTime()) { // compare the two to see which came before the other
+                    String swapper = dates.get(i);
+                    dates.set(i, dates.get(j));
+                    dates.set(j, swapper);
+                }
+                if (i_temp_date.getTime() == j_temp_date.getTime()){
+                    dates.remove(j);
+                    j--;
+                }
+            }
+        }
+        return dates;
+    }
+
+    public static long getDateFormatted(String date) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/yy", Locale.ENGLISH);
+        Date formatted = sdf.parse(date);
+        return formatted.getTime();
+    }
+
 }
 
 
