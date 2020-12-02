@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/list_note_title"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLength="10"
+        android:singleLine="true"
+        android:text="Large Text"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="42dp"
+        android:layout_height="41dp"
+        android:text="   " />
+
+    <TextView
+        android:id="@+id/list_note_date"
+        android:layout_width="187dp"
+        android:layout_height="34dp"
+        android:text="Small Text"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+
+</LinearLayout>
