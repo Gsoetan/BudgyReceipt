@@ -142,6 +142,7 @@ public class Trends extends AppCompatActivity {
         barGraph.setDrawBarShadow(false);
         barGraph.setDrawValueAboveBar(true);
         barGraph.setDrawGridBackground(true);
+        barGraph.setTouchEnabled(false);
         Description description = new Description();
         description.setText("");
         barGraph.setDescription(description);
@@ -203,7 +204,7 @@ public class Trends extends AppCompatActivity {
         calcDates(true);
         final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 
-        lineGraph.setTouchEnabled(true);
+        lineGraph.setTouchEnabled(false);
         lineGraph.setPinchZoom(true);
 
         XAxis xAxis = lineGraph.getXAxis();
