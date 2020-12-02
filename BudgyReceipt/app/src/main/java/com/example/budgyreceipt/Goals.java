@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -15,95 +16,98 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Goals extends AppCompatActivity {
-    private static final String TAG = "Goals";
-    public static final String USER_PREF = "USER_PREF" ;
-    public static final String KEY_NAME = "KEY_NAME";
-    public static final String KEY_DATE = "KEY_DATE";
-    SharedPreferences sp;
-    private EditText mGoalText;
-    private TextView mDisplayDate1;
-    private DatePickerDialog.OnDateSetListener mDateSetListener1;
-
+    private ListView mListNotes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_goals);
-        mGoalText = (EditText) findViewById(R.id.eGoal);
-        sp = getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
+        setContentView(R.layout.new_goals_activity);
+
+        mListNotes = (ListView) findViewById(R.id.main_listview);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_goals_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.action_create:
+                startActivity(new Intent(this, NoteActivity.class));
+                break;
+
+            case R.id.action_settings:
+                //TODO show settings activity
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
 
-        mDisplayDate1 =  findViewById(R.id.tvDate);
-        mDisplayDate1.setOnClickListener(new View.OnClickListener() {
+        mListNotes.setAdapter(null);
+        ArrayList<Note> notes = Utilities.getAllSavedNotes(getApplicationContext());
 
+
+        Collections.sort(notes, new Comparator<Note>() {
             @Override
-            public void onClick(View view) {
-                Calendar cal = Calendar.getInstance();
-                int year = cal.get(Calendar.YEAR);
-                int month = cal.get(Calendar.MONTH);
-                int day = cal.get(Calendar.DAY_OF_MONTH);
-
-                DatePickerDialog dialog = new DatePickerDialog(
-                        Goals.this,
-                        android.R.style.Theme_Holo_Light_Dialog_MinWidth,
-                        mDateSetListener1,
-                        year,month,day);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
+            public int compare(Note lhs, Note rhs) {
+                if(lhs.getDateTime() > rhs.getDateTime()) {
+                    return -1;
+                } else {
+                    return 1;
+                }
             }
         });
 
-        Calendar calendar = Calendar.getInstance();
-        String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
-        TextView textViewDate = findViewById(R.id.currDate);
-        textViewDate.setText(currentDate);
-
-        mDateSetListener1 = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                month = month + 1;
-                Log.d(TAG,"onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
-
-                String date = month + "/" + day + "/" + year;
-                mDisplayDate1.setText(date);
-            }
-        };
+        if(notes != null && notes.size() > 0) { //check if we have any notes!
+            final NoteAdapter na = new NoteAdapter(this, R.layout.activity_view_note, notes);
+            mListNotes.setAdapter(na);
 
 
-
-    }
-    public void save(View v) {
-        String name  = mGoalText.getText().toString();
-
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putString(KEY_NAME, name);
-        editor.commit();
-
-        Toast.makeText(this, "Saved!", Toast.LENGTH_SHORT).show();
-    }
-
-    public void show(View v) {
-        StringBuilder str = new StringBuilder();
-        if (sp.contains(KEY_NAME)) {
-            mGoalText.setText(sp.getString(KEY_NAME, ""));
+            mListNotes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String fileName = ((Note) mListNotes.getItemAtPosition(position)).getDateTime()
+                            + Utilities.FILE_EXTENSION;
+                    Intent viewNoteIntent = new Intent(getApplicationContext(), NoteActivity.class);
+                    viewNoteIntent.putExtra(Utilities.EXTRAS_NOTE_FILENAME, fileName);
+                    startActivity(viewNoteIntent);
+                }
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "Got Goals?!\nClick the plus to type them out."
+                    , Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void clear(View v) {
-        mGoalText.setText("");
-    }
 }
