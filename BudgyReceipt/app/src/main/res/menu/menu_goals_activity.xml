@@ -12,14 +12,7 @@
         app:showAsAction="always"
         />
 
-    <!-- SETTINGS -->
-    <item
-        android:enabled="true"
-        android:id="@+id/action_settings"
-        android:title="settings"
-        android:icon="@android:drawable/ic_menu_manage"
-        android:orderInCategory="10"
-        app:showAsAction="ifRoom"
+
         />
 
 
