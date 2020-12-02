@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Budgy Receipt</string>
+    <string name="app_name">Budgy</string>
     <string-array name="tags">
         <item>Grocery</item>
         <item>Entertainment</item>

@@ -22,7 +22,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
+            android:textStyle="bold"
+            android:paddingLeft="15dp"
             android:hint="Title Here"
             android:textSize="25sp" />
     </GridLayout>
@@ -293,7 +295,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:text="Photo" />
+                            android:text="Scan Photo" />
 
                         <ImageView
                             android:id="@+id/photo"
@@ -319,6 +321,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView2"
         app:layout_constraintVertical_bias="0.896"
-        app:srcCompat="@android:drawable/ic_input_add" />
+        android:src="@drawable/ic_action_save" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

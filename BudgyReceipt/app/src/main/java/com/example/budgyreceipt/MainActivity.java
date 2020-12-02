@@ -11,6 +11,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
 
         // setup for the drawer
         drawer = findViewById(R.id.drawer_layout);
@@ -128,7 +131,9 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         public void bind(Receipt receipt, int pos) { // make the fragment
             mReceipt = receipt;
             mText_merchant.setText(receipt.getMerchant());
-            mText_total.setText("$" + receipt.getTotal());
+            mText_total.setText("Total: $" + receipt.getTotal());
+            long index = receipt.getId();
+            mText_date.setText(mReceiptdb.overviewDao().getDate(index));
 
             if (selectedReceiptPos == pos){ mText_merchant.setBackgroundColor(Color.RED); }
             else { mText_merchant.setBackgroundColor(Color.WHITE); }

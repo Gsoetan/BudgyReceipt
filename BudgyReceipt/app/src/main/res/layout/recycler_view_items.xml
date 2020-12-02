@@ -14,37 +14,47 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true">
-
-
-            <TextView
-                android:id="@+id/merchant_text"
+            android:layout_alignParentLeft="true"
+            android:padding="5dp">
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginRight="8dp"
-                android:textStyle="bold"
-                android:textColor="#8B000000"
-                android:textSize="18sp"
-                android:gravity="center_horizontal" />
+                android:layout_height="match_parent" >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_receipt"/>
+
+                <TextView
+                    android:id="@+id/merchant_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="8dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/full_black"
+                    android:textSize="18sp"
+                    android:gravity="left"
+                    android:paddingLeft="10dp"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/total_text"
                 android:layout_width="103dp"
                 android:layout_height="match_parent"
                 android:elevation="50dp"
-                android:textColor="#0765F3"
+                android:textColor="@color/money"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_gravity="end"/>
 
             <TextView
                 android:id="@+id/date_text"
                 android:layout_width="103dp"
                 android:layout_height="match_parent"
                 android:elevation="50dp"
-                android:textColor="#0765F3"
-                android:textSize="18sp"
+                android:textColor="@color/full_black"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:layout_gravity="end"/>
+                android:layout_gravity="center_horizontal|center_vertical"/>
 
         </FrameLayout>
 

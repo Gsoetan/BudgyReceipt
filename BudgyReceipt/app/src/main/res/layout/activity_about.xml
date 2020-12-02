@@ -29,7 +29,8 @@
         android:layout_height="420dp"
         android:layout_marginTop="28dp"
         android:text="Here at Budgy Receipts we are a young team of developers looking to expand our horizons. This application is a way of gaining practical experience in programming a mobile app and working through Software Engineering development processes.
-                       \n \nSo What is Budgy Receipts, in essence it is a receipt tracking application that has simple budgeting functions to help keep track of funds and monthly/weekly spending habits."
+                       \n \nSo What is Budgy Receipts, in essence it is a receipt tracking application that has simple budgeting functions to help keep track of funds and monthly/weekly spending habits.
+                        \n\n\n Icon made by Freepik from www.flaticon.com"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"

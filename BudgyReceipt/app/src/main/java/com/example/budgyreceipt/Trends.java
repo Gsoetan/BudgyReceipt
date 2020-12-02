@@ -68,9 +68,10 @@ public class Trends extends AppCompatActivity {
         setContentView(R.layout.activity_trends);
 
         fromDate = findViewById(R.id.dateFrom);
-        toDate = findViewById(R.id.dateTo);
 
-        test = findViewById(R.id.test); // can remove later
+        String currentDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).format(new Date());
+        toDate = findViewById(R.id.dateTo);
+        toDate.setText(currentDate);
 
         dateCalculatorBtn = findViewById(R.id.calcDate);
         lineGraph = (LineChart) findViewById(R.id.line_graph);
