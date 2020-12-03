@@ -19,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         // setup for the drawer
         drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawers();
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        // grab the database (singleton)
+        // (singleton)
         mReceiptdb = ReceiptDatabase.getInstance(getApplicationContext());
 
         mRecyclerView = findViewById(R.id.receiptRecyclerView);
@@ -118,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
 
         private Receipt mReceipt;
         private TextView mText_merchant, mText_total, mText_date;
+        private ImageView mIcon;
 
         public ReceiptHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.recycler_view_items, parent, false));
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
             mText_merchant = itemView.findViewById(R.id.merchant_text);
             mText_total = itemView.findViewById(R.id.total_text);
             mText_date = itemView.findViewById(R.id.date_text);
+            mIcon = itemView.findViewById(R.id.receipt_icon);
         }
 
         public void bind(Receipt receipt, int pos) { // make the fragment
@@ -135,7 +136,10 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
             long index = receipt.getId();
             mText_date.setText(mReceiptdb.overviewDao().getDate(index));
 
-            if (selectedReceiptPos == pos){ mText_merchant.setBackgroundColor(Color.RED); }
+            if (selectedReceiptPos == pos){
+                mText_merchant.setBackgroundColor(Color.LTGRAY);
+                mIcon.setBackgroundColor(Color.LTGRAY);
+            }
             else { mText_merchant.setBackgroundColor(Color.WHITE); }
         }
 

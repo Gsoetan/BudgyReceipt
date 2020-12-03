@@ -137,11 +137,6 @@ public class MainCalculations {
             }
         }
 
-        // you could make it so that you compare each date based off if it's mill time is in between the start and end date and push it to a list/array and then pull the totals and tags
-//        long diffInMill = Math.abs(fDate.getTime() - pDate.getTime());
-//        long diffInDays = TimeUnit.DAYS.convert(diffInMill, TimeUnit.MILLISECONDS);
-//        String diff_to_string = Integer.toString((int) diffInDays);
-
         return desiredDates;
     }
 

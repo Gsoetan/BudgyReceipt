@@ -17,9 +17,6 @@ public interface OverviewDao {
     @Query("SELECT * FROM Overview WHERE receiptId = :receiptId ORDER BY id")
     public List<Overview> getOverviews(long receiptId);
 
-    @Query("SELECT total FROM Overview WHERE tag = :tag")
-    public List<String> getCategoryTotals(String tag); //used to get the totals of specified tags
-
     @Query("SELECT date FROM Overview")
     public List<String> getDates(); // used to just get all dates
 

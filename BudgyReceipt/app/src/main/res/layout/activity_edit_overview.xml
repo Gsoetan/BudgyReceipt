@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".OverviewActivity">
 
-    <GridLayout
+    <LinearLayout
         android:id="@+id/item_title"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -27,7 +27,7 @@
             android:paddingLeft="15dp"
             android:hint="Title Here"
             android:textSize="25sp" />
-    </GridLayout>
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollView2"

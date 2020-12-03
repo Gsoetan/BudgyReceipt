@@ -60,10 +60,6 @@ public class Goals extends AppCompatActivity {
             case R.id.action_create:
                 startActivity(new Intent(this, NoteActivity.class));
                 break;
-
-            case R.id.action_settings:
-                //TODO show settings activity
-                break;
         }
 
         return super.onOptionsItemSelected(item);

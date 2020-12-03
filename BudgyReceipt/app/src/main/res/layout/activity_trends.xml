@@ -12,7 +12,7 @@
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/bar_graph"
-            android:layout_width="727dp"
+            android:layout_width="730dp"
             android:layout_height="250dp"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -22,7 +22,7 @@
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/line_graph"
-            android:layout_width="731dp"
+            android:layout_width="730dp"
             android:layout_height="250dp"
             android:padding="10dp"
             app:layout_constraintEnd_toEndOf="parent"

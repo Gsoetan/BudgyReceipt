@@ -46,7 +46,7 @@ import java.util.Locale;
 
 public class Trends extends AppCompatActivity {
 
-    private TextView fromDate, toDate, test;
+    private TextView fromDate, toDate;
     private Button dateCalculatorBtn;
     private List<List<String>> dates_w_totals, tags_w_totals;
     private List<String> dates_in_order;
