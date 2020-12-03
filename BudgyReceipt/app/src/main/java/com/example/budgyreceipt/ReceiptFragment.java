@@ -31,7 +31,7 @@ public class ReceiptFragment extends DialogFragment {
                 .setTitle("New Receipt?")
                 .setView(receiptEditText)
                 .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                    @Override //might need to add the total here (idk yet)
+                    @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String receipt = receiptEditText.getText().toString();
                         mListener.onReceiptCreated(receipt.trim());

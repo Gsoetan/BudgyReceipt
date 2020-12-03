@@ -41,7 +41,6 @@ public class Overview {
     @ColumnInfo(name = "payment")
     private String mPayment;
 
-    //photo bitmap to come later
     public Overview() {}
 
     public Overview(long mId, long mReceiptId, String mDate, String mTotal, String mSubtotal, String mTag, String mPayment){

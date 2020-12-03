@@ -144,7 +144,7 @@ public class MainCalculations {
         List<Integer> ids_temp = ids;
         for (int i = 0; i < ids_temp.size(); i++){
             for (int j = i+1; j < ids_temp.size(); j++){
-                if (ids_temp.get(i) == ids_temp.get(j)){ ids_temp.remove(j); }
+                if (ids_temp.get(i) == ids_temp.get(j)){ ids_temp.remove(j); } // remove any duplicate ids
             }
         }
         return ids_temp;
@@ -188,7 +188,7 @@ public class MainCalculations {
         for (int i = 0; i < temp.size(); i++) {
             List<String> i_inner_temp = temp.get(i); // temp array for array at i pos
             for (int j = i + 1; j < temp.size(); j++) {
-                List<String> j_inner_temp = temp.get(j);
+                List<String> j_inner_temp = temp.get(j); // temp array for array at j pos
                 String i_temp_tag = i_inner_temp.get(0);
                 String j_temp_tag = j_inner_temp.get(0);
                 if (i_temp_tag.equals(j_temp_tag)){
@@ -218,7 +218,7 @@ public class MainCalculations {
                     dates.set(i, dates.get(j));
                     dates.set(j, swapper);
                 }
-                if (i_temp_date.getTime() == j_temp_date.getTime()){
+                if (i_temp_date.getTime() == j_temp_date.getTime()){ // remove dup dates
                     dates.remove(j);
                     j--;
                 }
@@ -227,7 +227,7 @@ public class MainCalculations {
         return dates;
     }
 
-    public static long getDateFormatted(String date) throws ParseException {
+    public static long getDateFormatted(String date) throws ParseException { // simply grabs the date and reformats it.
         SimpleDateFormat sdf = new SimpleDateFormat("MM/yy", Locale.ENGLISH);
         Date formatted = sdf.parse(date);
         return formatted.getTime();

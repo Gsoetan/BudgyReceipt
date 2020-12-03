@@ -100,6 +100,7 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
+    // Gets the contents for each card in the view
     private void showReceiptContents(boolean showContents) {
         if (showContents == true) {
             mDate.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getDate());
@@ -107,7 +108,7 @@ public class OverviewActivity extends AppCompatActivity {
             mSubTotal.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getSubtotal());
             mTag.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getTag());
             mPayment.setText(mReceiptDb.overviewDao().getOverview(mReceiptId).getPayment());
-        } else {
+        } else { // if there is no overview found for the receipt (Usually only for newly created receipts)
             Overview overview = new Overview();
             overview.setDate("01/01/0001");
             overview.setTotal("0.00");
@@ -120,11 +121,11 @@ public class OverviewActivity extends AppCompatActivity {
         }
     }
 
-    private void editOverview() {
+    private void editOverview() { // send user to the next page to edit this overview
         Intent intent = new Intent(this, OverviewEditActivity.class);
-        intent.putExtra(EXTRA_RECEIPT_ID, mReceiptId);
-        getEntryData();
-        long overviewId = mOverviewList.get(0).getId();
+        intent.putExtra(EXTRA_RECEIPT_ID, mReceiptId); // pass the receipt id
+        getEntryData(); // get instance of the database (refresh)
+        long overviewId = mOverviewList.get(0).getId(); // get the overview's id
         intent.putExtra(OverviewEditActivity.EXTRA_OVERVIEW_ID, overviewId);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_ENTRY);
     }
@@ -139,13 +140,13 @@ public class OverviewActivity extends AppCompatActivity {
             long overviewId = data.getLongExtra(OverviewEditActivity.EXTRA_OVERVIEW_ID, -1);
             Overview updatedOverview = mReceiptDb.overviewDao().getOverview(overviewId);
 
+            // change the current overview's data to the updated entries from the last activity
             Overview currentOverview = mOverviewList.get(0);
             currentOverview.setDate(updatedOverview.getDate());
             currentOverview.setTotal(updatedOverview.getTotal());
             currentOverview.setSubtotal(updatedOverview.getSubtotal());
             currentOverview.setTag(updatedOverview.getTag());
             currentOverview.setPayment(updatedOverview.getPayment());
-            // grab img
 
             Toast.makeText(this, "Entries updated", Toast.LENGTH_SHORT).show();
         }

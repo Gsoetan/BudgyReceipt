@@ -12,6 +12,7 @@ public class splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        // start the main activity after this page shows up
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

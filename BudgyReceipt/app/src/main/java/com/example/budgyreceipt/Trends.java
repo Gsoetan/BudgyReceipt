@@ -62,14 +62,13 @@ public class Trends extends AppCompatActivity {
         setContentView(R.layout.activity_trends);
 
         fromDate = findViewById(R.id.dateFrom);
-
-        String currentDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).format(new Date());
         toDate = findViewById(R.id.dateTo);
-        toDate.setText(currentDate);
-
         dateCalculatorBtn = findViewById(R.id.calcDate);
         lineGraph = (LineChart) findViewById(R.id.line_graph);
         barGraph = (BarChart) findViewById(R.id.bar_graph);
+
+        String currentDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).format(new Date());
+        toDate.setText(currentDate);
 
         mReceiptDb = ReceiptDatabase.getInstance(getApplicationContext());
 
@@ -133,6 +132,7 @@ public class Trends extends AppCompatActivity {
         calcDates(false);
         final List<String> res_tags = Arrays.asList(getResources().getStringArray(R.array.tags));
 
+        // Settings for displaying graph
         barGraph.setDrawBarShadow(false);
         barGraph.setDrawValueAboveBar(true);
         barGraph.setDrawGridBackground(true);
@@ -141,6 +141,14 @@ public class Trends extends AppCompatActivity {
         description.setText("");
         barGraph.setDescription(description);
 
+        // formatting of the x axis
+        XAxis xAxis = barGraph.getXAxis();
+        xAxis.setValueFormatter(new XAxisFormatter(res_tags));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1);
+        xAxis.setCenterAxisLabels(false);
+
+        // parse array for the tags and totals that will made into coordinates for the graph
         List<BarEntry> barEntries = new ArrayList<>();
         for (int i = 0; i < tags_w_totals.size(); i++) {
             List<String> temp = tags_w_totals.get(i);
@@ -148,21 +156,15 @@ public class Trends extends AppCompatActivity {
             barEntries.add(new BarEntry(temp_index, (float) Double.parseDouble(temp.get(1))));
         }
 
+        // add the data to the view
         BarDataSet barDataSet = new BarDataSet(barEntries, "Spending Categories");
         barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-
         BarData data = new BarData(barDataSet);
         data.setBarWidth(0.6f);
 
         barGraph.setData(data);
 
-        XAxis xAxis = barGraph.getXAxis();
-        xAxis.setValueFormatter(new XAxisFormatter(res_tags));
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setGranularity(1);
-        xAxis.setCenterAxisLabels(false);
-
-        barGraph.invalidate();
+        barGraph.invalidate(); // show graph
 
     }
 
@@ -175,7 +177,7 @@ public class Trends extends AppCompatActivity {
 
         @Override
         public String getFormattedValue(float value) {
-            return xValues.get((int) value); // where the error stems from
+            return xValues.get((int) value); // gets the tag from the array
         }
     }
 
@@ -187,7 +189,7 @@ public class Trends extends AppCompatActivity {
         }
 
         @Override
-        public String getFormattedValue(float value) {
+        public String getFormattedValue(float value) { // turns the value into an easy to read date
             Date date = new Date((long) value);
             SimpleDateFormat sdf = new SimpleDateFormat("MM/yy", Locale.ENGLISH);
             return sdf.format(date);
@@ -223,32 +225,34 @@ public class Trends extends AppCompatActivity {
         LineData lineData = new LineData(lineDataSet);
         lineGraph.setData(lineData);
 
-        lineGraph.invalidate();
+        lineGraph.invalidate(); // show graph
     }
 
     private void calcDates(Boolean isLine) throws ParseException { // this will return a list of dates from the database
         String startDate = fromDate.getText().toString();
         String endDate = toDate.getText().toString();
 
-        List<String> dates = mReceiptDb.overviewDao().getDates();
-        List<String> dates_in_period = dateCalc(startDate, endDate, dates);
+        dates_w_totals = new ArrayList<>(); // nested list to hold totals with their respective dates
+        tags_w_totals = new ArrayList<>(); // nested list to hold all tags with their respective totals and dates
+        dates_in_order = new ArrayList<>();
+
+        List<String> dates = mReceiptDb.overviewDao().getDates(); // gets the dates from the database
+        List<String> dates_in_period = dateCalc(startDate, endDate, dates); // get the dates from the specifies period
         List<Integer> overviewIds = new ArrayList<>();
+
         for (String date: dates_in_period) {
             overviewIds.addAll(mReceiptDb.overviewDao().getDateID(date));
         }
         overviewIds = getUniqueIds(overviewIds); // will be used to get the totals now
 
-        dates_w_totals = new ArrayList<>(); // nested list to hold totals with their respective dates
-        tags_w_totals = new ArrayList<>(); // nested list to hold all tags with their respective totals and dates
-        dates_in_order = new ArrayList<>();
         for (int id:overviewIds) {
             List<String> temp = new ArrayList<>();
-            if (isLine) {
+            if (isLine) { // if this is for the line graph
                 dates_in_order.add(mReceiptDb.overviewDao().getDate((long) id));
                 temp.add(mReceiptDb.overviewDao().getDate((long) id));
                 temp.add(mReceiptDb.overviewDao().getTotal((long) id));
                 dates_w_totals.add(temp);
-            } else {
+            } else { // if this is for the bar graph
                 temp.add(mReceiptDb.overviewDao().getTag((long) id));
                 temp.add(mReceiptDb.overviewDao().getTotal((long) id));
                 tags_w_totals.add(temp);

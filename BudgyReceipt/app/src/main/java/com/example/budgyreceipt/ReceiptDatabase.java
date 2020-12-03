@@ -6,7 +6,7 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {Receipt.class, Overview.class}, version = 1)
+@Database(entities = {Receipt.class, Overview.class}, version = 1) // create singleton database
 public abstract class ReceiptDatabase extends RoomDatabase {
 
     public static final String DATABASE_NAME = "receipts.db";

@@ -18,7 +18,7 @@ public class Receipt {
     private String mMerchant;
 
     @NonNull
-    @ColumnInfo(name = "total") // will probably need to come from the overview class/table (will get back to it)
+    @ColumnInfo(name = "total")
     private String mTotal;
 
     // adding updated time to possibly make changes to receipts easier to track in the long-term

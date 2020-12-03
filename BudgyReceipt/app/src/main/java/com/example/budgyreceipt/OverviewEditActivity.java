@@ -46,9 +46,6 @@ import static com.example.budgyreceipt.MainCalculations.getArrayIndex;
 // If you can get to it, add something so that if not all information was filled - a prompt appears letting the user know this and that they will have to supplement the missing info
 public class OverviewEditActivity extends AppCompatActivity {
 
-    private final int REQUEST_CODE_NEW_ENTRY = 0;
-    private final int REQUEST_CODE_UPDATE_ENTRY = 1;
-
     private ReceiptDatabase mReceiptDb;
     private long mOverviewId;
     private Overview mOverview;
@@ -127,6 +124,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         });
 
 
+        // Set listener to the date text box so that when clicked it brings up a dialogue box to chnage the date
         oDateEt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,7 +173,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_OVERVIEW_ID, mOverview.getId());
         setResult(RESULT_OK, intent);
-        finish();
+        finish(); // end activity so user cannot go back (glitch prevention)
     }
 
 
