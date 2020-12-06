@@ -25,8 +25,8 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-        mEtTitle = (EditText) findViewById(R.id.note_et_title);
-        mEtContent = (EditText) findViewById(R.id.note_et_content);
+        mEtTitle = findViewById(R.id.note_et_title);
+        mEtContent = findViewById(R.id.note_et_content);
 
         //check if view/edit note bundle is set, otherwise user wants to create new note
         mFileName = getIntent().getStringExtra(Utilities.EXTRAS_NOTE_FILENAME);

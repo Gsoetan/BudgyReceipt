@@ -44,7 +44,7 @@ public class Goals extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_goals_activity);
 
-        mListNotes = (ListView) findViewById(R.id.main_listview);
+        mListNotes = findViewById(R.id.main_listview);
     }
 
     @Override

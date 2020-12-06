@@ -21,13 +21,13 @@ public class Utilities {
 
     public static boolean saveNote(Context context, Note note) {
 
-        String fileName = String.valueOf(note.getDateTime()) + FILE_EXTENSION;
+        String fileName = note.getDateTime() + FILE_EXTENSION;
 
         FileOutputStream fos;
         ObjectOutputStream oos;
 
         try{
-            fos = context.openFileOutput(fileName, context.MODE_PRIVATE);
+            fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             oos = new ObjectOutputStream(fos);
             oos.writeObject(note);
             oos.close();

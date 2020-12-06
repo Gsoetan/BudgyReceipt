@@ -28,8 +28,8 @@ public class NoteAdapter extends ArrayAdapter<Note> {
         Note note = getItem(position);
 
         if(note != null) {
-            TextView title = (TextView) convertView.findViewById(R.id.list_note_title);
-            TextView date = (TextView) convertView.findViewById(R.id.list_note_date);
+            TextView title = convertView.findViewById(R.id.list_note_title);
+            TextView date = convertView.findViewById(R.id.list_note_date);
 
 
             title.setText(note.getTitle());

@@ -64,8 +64,8 @@ public class Trends extends AppCompatActivity {
         fromDate = findViewById(R.id.dateFrom);
         toDate = findViewById(R.id.dateTo);
         dateCalculatorBtn = findViewById(R.id.calcDate);
-        lineGraph = (LineChart) findViewById(R.id.line_graph);
-        barGraph = (BarChart) findViewById(R.id.bar_graph);
+        lineGraph = findViewById(R.id.line_graph);
+        barGraph = findViewById(R.id.bar_graph);
 
         String currentDate = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH).format(new Date());
         toDate.setText(currentDate);
@@ -169,7 +169,7 @@ public class Trends extends AppCompatActivity {
     }
 
     public class XAxisFormatter extends ValueFormatter {
-        private List<String> xValues;
+        private final List<String> xValues;
 
         public XAxisFormatter(List<String> values){
             this.xValues = values;
@@ -182,7 +182,7 @@ public class Trends extends AppCompatActivity {
     }
 
     public class XAxisFormatterLine extends ValueFormatter {
-        private List<String> xValues;
+        private final List<String> xValues;
 
         public XAxisFormatterLine(List<String> values){
             this.xValues = values;
@@ -248,13 +248,13 @@ public class Trends extends AppCompatActivity {
         for (int id:overviewIds) {
             List<String> temp = new ArrayList<>();
             if (isLine) { // if this is for the line graph
-                dates_in_order.add(mReceiptDb.overviewDao().getDate((long) id));
-                temp.add(mReceiptDb.overviewDao().getDate((long) id));
-                temp.add(mReceiptDb.overviewDao().getTotal((long) id));
+                dates_in_order.add(mReceiptDb.overviewDao().getDate(id));
+                temp.add(mReceiptDb.overviewDao().getDate(id));
+                temp.add(mReceiptDb.overviewDao().getTotal(id));
                 dates_w_totals.add(temp);
             } else { // if this is for the bar graph
-                temp.add(mReceiptDb.overviewDao().getTag((long) id));
-                temp.add(mReceiptDb.overviewDao().getTotal((long) id));
+                temp.add(mReceiptDb.overviewDao().getTag(id));
+                temp.add(mReceiptDb.overviewDao().getTotal(id));
                 tags_w_totals.add(temp);
             }
         }

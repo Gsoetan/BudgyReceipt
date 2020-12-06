@@ -124,8 +124,10 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     private class ReceiptHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnLongClickListener {
 
         private Receipt mReceipt;
-        private TextView mText_merchant, mText_total, mText_date;
-        private ImageView mIcon;
+        private final TextView mText_merchant;
+        private final TextView mText_total;
+        private final TextView mText_date;
+        private final ImageView mIcon;
 
         // inflates/initializes and shows each singular receipt
         public ReceiptHolder(LayoutInflater inflater, ViewGroup parent){
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         }
     }
 
-    private ActionMode.Callback actionCallback = new ActionMode.Callback() {
+    private final ActionMode.Callback actionCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) { // shows the deletion menu
             MenuInflater inflater = mode.getMenuInflater();
@@ -209,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
 
     private class ReceiptAdapter extends RecyclerView.Adapter<ReceiptHolder> {
 
-        private List<Receipt> mReceiptList;
+        private final List<Receipt> mReceiptList;
 
         public ReceiptAdapter(List<Receipt> receipts) {
             mReceiptList = receipts;

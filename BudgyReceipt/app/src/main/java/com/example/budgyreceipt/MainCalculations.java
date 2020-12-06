@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainCalculations {
-    private ArrayList<String> str = new ArrayList<String>();
+    private final ArrayList<String> str = new ArrayList<String>();
 
     public static int getArrayIndex(String[] resource_tags, String tag) {
         int index = -1;

@@ -80,7 +80,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_overview);
 
         oTitleEt = findViewById(R.id.merchant);
-        oDateEt = (TextView) findViewById(R.id.date);
+        oDateEt = findViewById(R.id.date);
         oTotalEt = findViewById(R.id.total);
         oSubTotalEt = findViewById(R.id.subTotal);
         tags = findViewById(R.id.tag); //https://developer.android.com/guide/topics/ui/controls/spinner.html
