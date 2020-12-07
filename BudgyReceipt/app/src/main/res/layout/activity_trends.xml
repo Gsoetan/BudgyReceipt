@@ -81,11 +81,12 @@
                     android:id="@+id/calcDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="15dp"
                     android:layout_weight="1"
-                    android:text="Calculate"
-                    android:layout_gravity="center_horizontal"/>
+                    android:fontFamily="@font/carter_one_font"
+                    android:text="Calculate" />
             </LinearLayout>
 
         </LinearLayout>

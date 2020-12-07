@@ -23,10 +23,11 @@
             android:layout_height="wrap_content"
             android:layout_columnSpan="2"
             android:layout_gravity="center"
-            android:textStyle="bold"
-            android:paddingLeft="15dp"
+            android:fontFamily="@font/carter_one_font"
             android:hint="Title Here"
-            android:textSize="25sp" />
+            android:paddingLeft="15dp"
+            android:textSize="25sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ScrollView

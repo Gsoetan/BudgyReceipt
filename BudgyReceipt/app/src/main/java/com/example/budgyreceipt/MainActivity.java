@@ -1,8 +1,10 @@
 package com.example.budgyreceipt;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,6 +12,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ActionMode;
@@ -115,10 +119,9 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
     private List<Receipt> getReceipts(Boolean isAsc) { // load the receipts into the activity based off user's choice (based on the updated time)
         if (isAsc){
             return mReceiptdb.receiptDao().getReceiptsOld(); // load older items first
-        } else if (!isAsc){
+        } else {
             return mReceiptdb.receiptDao().getReceiptsNew(); // load newer items first
         }
-        return mReceiptdb.receiptDao().getReceiptsNew(); // by default the newer items are loaded first
     }
 
     private class ReceiptHolder extends RecyclerView.ViewHolder implements  View.OnClickListener, View.OnLongClickListener {
@@ -132,9 +135,11 @@ public class MainActivity extends AppCompatActivity implements ReceiptFragment.O
         // inflates/initializes and shows each singular receipt
         public ReceiptHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.recycler_view_items, parent, false));
+            Typeface font = ResourcesCompat.getFont(getApplicationContext(), R.font.carter_one); // get the font style desired
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
             mText_merchant = itemView.findViewById(R.id.merchant_text);
+            mText_merchant.setTypeface(font); // attach font style
             mText_total = itemView.findViewById(R.id.total_text);
             mText_date = itemView.findViewById(R.id.date_text);
             mIcon = itemView.findViewById(R.id.receipt_icon);

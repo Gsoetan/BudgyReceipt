@@ -106,9 +106,7 @@ public class OverviewEditActivity extends AppCompatActivity {
             oDateEt.setText(mOverview.getDate());
             oTotalEt.setText(mOverview.getTotal());
             oSubTotalEt.setText(mOverview.getSubtotal());
-            tags.setSelection(getArrayIndex(resource_tags, mOverview.getTag()));
             oPaymentEt.setText(mOverview.getPayment());
-            // get image from here as well
         }
 
         long receiptId = intent.getLongExtra(EXTRA_RECEIPT_ID, 0);
@@ -155,6 +153,7 @@ public class OverviewEditActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.tags, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tags.setAdapter(adapter);
+        tags.setSelection(getArrayIndex(resource_tags, mOverview.getTag())); // set selection after adapter to avoid default selection of the first tag
     }
 
 

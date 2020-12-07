@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="62dp"
         android:background="#000000"
+        android:fontFamily="@font/carter_one_font"
         android:gravity="center"
         android:text="Who are we?"
         android:textColor="#FAF7F7"
@@ -25,9 +26,10 @@
 
     <TextView
         android:id="@+id/about_text"
-        android:layout_width="346dp"
-        android:layout_height="420dp"
+        android:layout_width="333dp"
+        android:layout_height="582dp"
         android:layout_marginTop="28dp"
+        android:fontFamily="sans-serif-smallcaps"
         android:text="Here at Budgy Receipts we are a young team of developers looking to expand our horizons. This application is a way of gaining practical experience in programming a mobile app and working through Software Engineering development processes.
                        \n \nSo What is Budgy Receipts, in essence it is a receipt tracking application that has simple budgeting functions to help keep track of funds and monthly/weekly spending habits.
                         \n\n\n Icon made by Freepik from www.flaticon.com"

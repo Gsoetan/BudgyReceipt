@@ -29,16 +29,19 @@
                     android:id="@+id/merchant_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:hint="test"
                     android:layout_marginRight="8dp"
-                    android:textStyle="bold"
+                    android:fontFamily="@font/carter_one_font"
+                    android:gravity="left|center"
+                    android:paddingLeft="10dp"
                     android:textColor="@color/full_black"
                     android:textSize="18sp"
-                    android:gravity="left"
-                    android:paddingLeft="10dp"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/total_text"
+                android:hint="test"
                 android:layout_width="103dp"
                 android:layout_height="match_parent"
                 android:elevation="50dp"
@@ -49,6 +52,8 @@
 
             <TextView
                 android:id="@+id/date_text"
+                android:hint="awaiting entry"
+                android:gravity="center"
                 android:layout_width="103dp"
                 android:layout_height="match_parent"
                 android:elevation="50dp"
