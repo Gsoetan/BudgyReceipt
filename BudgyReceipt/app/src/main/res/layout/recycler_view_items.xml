@@ -29,7 +29,6 @@
                     android:id="@+id/merchant_text"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:hint="test"
                     android:layout_marginRight="8dp"
                     android:fontFamily="@font/carter_one_font"
                     android:gravity="left|center"
@@ -41,7 +40,6 @@
 
             <TextView
                 android:id="@+id/total_text"
-                android:hint="test"
                 android:layout_width="103dp"
                 android:layout_height="match_parent"
                 android:elevation="50dp"

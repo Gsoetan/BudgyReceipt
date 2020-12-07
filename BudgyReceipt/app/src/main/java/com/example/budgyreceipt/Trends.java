@@ -128,6 +128,19 @@ public class Trends extends AppCompatActivity {
 
     }
 
+    public class XAxisFormatter extends ValueFormatter {
+        private final List<String> xValues;
+
+        public XAxisFormatter(List<String> values){
+            this.xValues = values;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            return xValues.get((int) value); // gets the tag from the array
+        }
+    }
+
     private void setBarGraph() throws ParseException {
         calcDates(false);
         final List<String> res_tags = Arrays.asList(getResources().getStringArray(R.array.tags));
@@ -166,19 +179,6 @@ public class Trends extends AppCompatActivity {
 
         barGraph.invalidate(); // show graph
 
-    }
-
-    public class XAxisFormatter extends ValueFormatter {
-        private final List<String> xValues;
-
-        public XAxisFormatter(List<String> values){
-            this.xValues = values;
-        }
-
-        @Override
-        public String getFormattedValue(float value) {
-            return xValues.get((int) value); // gets the tag from the array
-        }
     }
 
     public class XAxisFormatterLine extends ValueFormatter {
